@@ -1,8 +1,8 @@
 <?php
     $servername = "localhost";
-    $username = "benysekv";
-    $password = "KraKEN-17.9.2001";
-    $db = "benysekv";
+    $username = "root";
+    $password = "benysek...";
+    $db = "quistory";
 
     try {
         // Připojení k DB

@@ -35,8 +35,8 @@ class UzivatelController {
                 session_start();
                 $_SESSION['uzivatel_id'] = $uzivatel['id'];
                 $_SESSION['uzivatel_jmeno'] = $uzivatel['username'];
-                echo "Hurá";
-                // Přesměrování na hlavní stránku nebo dashboard
+                // Přesměrování na hlavní stránku
+                header('Location: KvizVyberView.php');
             } else {
                 // Přihlášení selhalo
                 echo "Nesprávné uživatelské jméno nebo heslo.";
