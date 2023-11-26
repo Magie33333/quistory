@@ -12,9 +12,40 @@ class KvizModel {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function ziskatNahodnouOtazku($kviz_id, $vylouceneOtazky) {
-        $stmt = $this->db->prepare("SELECT * FROM otazky WHERE kviz_id = ? AND otazka_id NOT IN (" . implode(',', $vylouceneOtazky) . ")");
+    public function ziskatNazevKvizu($kviz_id) {
+        $stmt = $this->db->prepare("SELECT nazev FROM kvizy WHERE kviz_id = ?");
         $stmt->execute([$kviz_id]);
+        $vysledek = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($vysledek) {
+            return $vysledek['nazev'];
+        } else {
+            return null; // Nebo vhodná chybová zpráva/hodnota
+        }
+    }
+
+    /*public function ziskatNahodnouOtazku($kviz_id, $vylouceneOtazky) {
+        $stmt = $this->db->prepare("SELECT * FROM otazky WHERE kviz_id = ? AND otazka_id NOT IN (" . implode(',', array_fill(0, count($vylouceneOtazky), '?')) . ")");
+        $stmt->execute(array_merge([$kviz_id], $vylouceneOtazky));
+        $otazky = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if (count($otazky) > 0) {
+            return $otazky[array_rand($otazky)];
+        }
+        return null;
+    }*/
+
+    public function ziskatNahodnouOtazku($kviz_id, $vylouceneOtazky) {
+        if (empty($vylouceneOtazky)) {
+            // Handle the case where there are no excluded question IDs.
+            $stmt = $this->db->prepare("SELECT * FROM otazky WHERE kviz_id = ?");
+            $stmt->execute([$kviz_id]);
+        } else {
+            $questionIds = implode(',', array_fill(0, count($vylouceneOtazky), '?'));
+    
+            $stmt = $this->db->prepare("SELECT * FROM otazky WHERE kviz_id = ? AND otazka_id NOT IN ($questionIds)");
+            $stmt->execute(array_merge([$kviz_id], $vylouceneOtazky));
+        }
+    
         $otazky = $stmt->fetchAll(PDO::FETCH_ASSOC);
         if (count($otazky) > 0) {
             return $otazky[array_rand($otazky)];
