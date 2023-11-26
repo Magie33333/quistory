@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 include 'KvizModel.php';
 include 'connect.php';
 
@@ -10,10 +12,10 @@ class KvizController {
     private $kvizModel;
     private $pocetSpravnych = 0;
     private $zobrazeneOtazky = [];
-    private $pocetOtazekVKvizu = 2;
 
     public function __construct($dbConnection) {
         $this->kvizModel = new KvizModel($dbConnection);
+        $this->pocetSpravnych = $_SESSION['pocetSpravnych'] ?? 0;
     }
 
     public function zobrazKvizy() {
@@ -23,21 +25,27 @@ class KvizController {
     }
 
     public function spustKviz($kviz_id) {
-        if (count($this->zobrazeneOtazky) >= $this->pocetOtazekVKvizu) {
+        $_SESSION['zacatekKvizu'] = time(); // Uložení současného času jako začátek kvízu
+        $_SESSION['casovyLimit'] = 15; // 15 sekund
+        $_SESSION['zbývajícíCas'] = 15; // 15 sekund
+
+        $nazevKvizu = $this->kvizModel->ziskatNazevKvizu($kviz_id);
+
+        $otazka = $this->kvizModel->ziskatNahodnouOtazku($kviz_id, $_SESSION['zobrazenéOtázky'] ?? []);
+
+
+        if ($otazka == null) {
             $this->ukoncitKviz();
             return;
         }
 
-        $nazevKvizu = $this->kvizModel->ziskatNazevKvizu($kviz_id);
-
-        $otazka = $this->kvizModel->ziskatNahodnouOtazku($kviz_id, $this->zobrazeneOtazky);
         if ($otazka != null) {
+            //$_SESSION['zobrazenéOtázky'][] = $otazka['otazka_id'];
             $this->zobrazeneOtazky[] = $otazka['otazka_id'];
             $odpovedi = $this->kvizModel->ziskatOdpovedi($otazka['otazka_id']);
             shuffle($odpovedi);
             include 'KvizProbihaView.php';
         }
-        
     }
 
     // Další potřebné metody...
@@ -62,16 +70,26 @@ class KvizController {
             if ($odpoved['moznost_id'] == $moznost_id) {
                 if ($odpoved['je_spravna'] == 1) {
                     $this->pocetSpravnych++;
+                    $_SESSION['pocetSpravnych'] = $this->pocetSpravnych;
                     break;
                 }
             }
         }
 
-        // Uložení počtu správných odpovědí do session
-        $_SESSION['pocetSpravnych'] = $this->pocetSpravnych;
-
         // Přidání ID otázky do pole zobrazených otázek v session
         $_SESSION['zobrazenéOtázky'][] = $otazka_id;
+        
+        $aktualniCas = time();
+        $zacatekKvizu = $_SESSION['zacatekKvizu'] ?? $aktualniCas;
+        $casovyLimit = $_SESSION['casovyLimit'] ?? 15;
+        $uplynulyCas = $aktualniCas - $zacatekKvizu;
+        $_SESSION['zbývajícíCas'] = max(0, $_SESSION['zbývajícíCas'] - $uplynulyCas);
+
+        if (($aktualniCas - $zacatekKvizu) > $casovyLimit) {
+            // Čas vypršel, ukončení kvízu           
+            $this->ukoncitKviz();
+            return;
+        }
 
         // Přesměrování na další otázku
         $this->presunNaDalsiOtazku($kviz_id);
@@ -86,7 +104,18 @@ class KvizController {
     }
 
     private function ukoncitKviz() {
-        echo "Kvíz skončil. Máte $this->pocetSpravnych správných odpovědí z $this->pocetOtazekVKvizu otázek.";
+        $pocetSpravnych = $_SESSION['pocetSpravnych'] ?? 0;
+        $pocetZobrazenych = count($_SESSION['zobrazenéOtázky'] ?? []);
+
+        // Zpráva o ukončení kvízu
+        echo "<h1>Kvíz skončil</h1>";
+        echo "<p>Máte $pocetSpravnych správných odpovědí z $pocetZobrazenych otázek.</p>";
+
+        // Tlačítko pro návrat na výběr kvízů
+        echo "<a href='KvizVyber.php' class='btn'>Zpět na výběr kvízů</a>";
+
+        // Reset session dat pro kvíz
+        unset($_SESSION['pocetSpravnych'], $_SESSION['zobrazenéOtázky'], $_SESSION['kviz_id']);
     }
     
 }
@@ -99,4 +128,5 @@ if (isset($_POST['action']) && $_POST['action'] === 'zpracujOdpoved') {
     $controller = new KvizController($conn); // Předpokládáme, že máte připojení k DB
     $controller->zpracujOdpoved($otazka_id, $moznost_id, $kviz_id);
 }
+
 ?>

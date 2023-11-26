@@ -13,6 +13,22 @@
             }
             return true;
         }
+
+        let zbyvajiciCas = <?php echo $_SESSION['zbývajícíCas']; ?>; // 15 sekund
+
+        function odpocetCasu() {
+            if (zbyvajiciCas <= 0) {
+                // Čas vypršel, přesměrování na ukončení kvízu
+                //window.location.href = 'KvizController.php?action=ukoncitKviz';
+            } else {
+                // Aktualizace zbyvajícího času a zobrazení v UI
+                document.getElementById('zbyvajiciCas').textContent = zbyvajiciCas;
+                zbyvajiciCas--;
+            }
+        }
+
+        // Spuštění časovače
+        setInterval(odpocetCasu, 1000); // Aktualizace každou sekundu
     </script>
 </head>
 <body>
@@ -31,5 +47,6 @@
         <?php endforeach; ?>
         <input type="submit" value="Odpovědět">
     </form>
+    <div>Čas do ukončení kvízu: <span id="zbyvajiciCas">15</span> sekund</div>
 </body>
 </html>
