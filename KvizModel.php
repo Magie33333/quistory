@@ -25,18 +25,24 @@ class KvizModel {
     }
 
     public function ziskatNahodnouOtazku($kviz_id, $vylouceneOtazky) {
-        if (count($vylouceneOtazky) > 0) {
-            $placeholder = implode(',', array_fill(0, count($vylouceneOtazky), '?'));
-            $sql = "SELECT * FROM otazky WHERE kviz_id = ? AND otazka_id NOT IN ($placeholder) ORDER BY RAND() LIMIT 1";
-            $params = array_merge([$kviz_id], $vylouceneOtazky);
-        } else {
-            $sql = "SELECT * FROM otazky WHERE kviz_id = ? ORDER BY RAND() LIMIT 1";
-            $params = [$kviz_id];
-        }
+        try {
+            if (count($vylouceneOtazky) > 0) {
+                $placeholder = implode(',', array_fill(0, count($vylouceneOtazky), '?'));
+                $sql = "SELECT * FROM otazky WHERE kviz_id = ? AND otazka_id NOT IN ($placeholder) ORDER BY RAND() LIMIT 1";
+                $params = array_merge([$kviz_id], $vylouceneOtazky);
+            } else {
+                $sql = "SELECT * FROM otazky WHERE kviz_id = ? ORDER BY RAND() LIMIT 1";
+                $params = [$kviz_id];
+            }
     
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute($params);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($params);
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            // Log chyby a vrácení null nebo vyhození vlastní výjimky
+            error_log("Chyba při načítání náhodné otázky: " . $e->getMessage());
+            return null;
+        }
     }
 
     public function ziskatOdpovedi($otazka_id) {

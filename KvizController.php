@@ -17,102 +17,98 @@ class KvizController {
         return $this->kvizModel->ziskatKvizy();
     }
 
-    public function zpracujOdpoved($otazka_id, $moznost_id, $kviz_id) {
-        // Získá všechny odpovědi pro danou otázku
-        $odpovedi = $this->kvizModel->ziskatOdpovedi($otazka_id);
-
-        // Zkontroluje, zda je vybraná možnost správná
-        foreach ($odpovedi as $odpoved) {
-            if ($odpoved['moznost_id'] == $moznost_id) {
-                if ($odpoved['je_spravna'] == 1) {
-                    $this->pocetSpravnych++;
-                    $_SESSION['pocetSpravnych'] = $this->pocetSpravnych;
-                    break;
-                }
-            }
-        }
-
-        // Přidání ID otázky do pole zobrazených otázek v session
-        $_SESSION['zobrazenéOtázky'][] = $otazka_id;
+    // Tato metoda bude volána při zahájení kvízu přes AJAX
+    public function inicializovatKviz($kviz_id) {
+        $_SESSION['zacatekKvizu'] = time();
+        $_SESSION['casovyLimit'] = 60; // Nastavte podle potřeby
+        $_SESSION['zbývajícíCas'] = $_SESSION['casovyLimit'];
+        $_SESSION['kviz_id'] = $kviz_id;
+        $_SESSION['pocetSpravnych'] = 0;
+        $_SESSION['zobrazenéOtázky'] = [];
     }
 
+    // Tato metoda bude volána při zpracování odpovědí uživatele
+    public function zpracujOdpoved($otazka_id, $moznost_id) {
+        $jeSpravna = $this->kvizModel->overitOdpoved($otazka_id, $moznost_id);
+        if ($jeSpravna) {
+            $_SESSION['pocetSpravnych']++;
+        }
+
+        $_SESSION['zobrazenéOtázky'][] = $otazka_id;
+
+        // Volání metody pro získání další otázky
+        $this->ziskatDalsiOtazkuAjax($_SESSION['kviz_id']);
+    }
+
+    // Metoda pro získání další otázky přes AJAX
     public function ziskatDalsiOtazkuAjax($kviz_id) {
-        session_start();
         $aktualniCas = time();
-        $zacatekKvizu = $_SESSION['zacatekKvizu'] ?? $aktualniCas;
-        $casovyLimit = $_SESSION['casovyLimit'] ?? 60; // Nastavení limitu (např. 60 sekund)
+        $zacatekKvizu = $_SESSION['zacatekKvizu'];
+        $casovyLimit = $_SESSION['casovyLimit'];
         $uplynulyCas = $aktualniCas - $zacatekKvizu;
 
-        // Kontrola, zda nevypršel čas
         if ($uplynulyCas > $casovyLimit) {
-            echo json_encode(['status' => 'expired']);
-            exit;
+            $this->ukoncitKviz();
+            return;
         }
 
-        // Získání náhodné otázky, která ještě nebyla zobrazena
-        $vylouceneOtazky = $_SESSION['zobrazenéOtázky'] ?? [];
+        $vylouceneOtazky = $_SESSION['zobrazenéOtázky'];
         $otazka = $this->kvizModel->ziskatNahodnouOtazku($kviz_id, $vylouceneOtazky);
 
-        if ($otazka == null) {
-            // Všechny otázky byly již zobrazeny nebo došlo k chybě
-            echo json_encode(['status' => 'completed']);
-            exit;
+        if ($otazka) {
+            $_SESSION['zobrazenéOtázky'][] = $otazka['otazka_id'];
+            $odpovedi = $this->kvizModel->ziskatOdpovedi($otazka['otazka_id']);
+
+            echo json_encode([
+                'status' => 'success',
+                'otazka' => $otazka,
+                'odpovedi' => $odpovedi,
+                'zbyvajiciCas' => $_SESSION['casovyLimit'] - $uplynulyCas
+            ]);
+        } else {
+            $this->ukoncitKviz();
         }
-
-        // Přidání ID otázky do seznamu zobrazených otázek
-        $_SESSION['zobrazenéOtázky'][] = $otazka['otazka_id'];
-
-        // Získání odpovědí pro otázku
-        $odpovedi = $this->kvizModel->ziskatOdpovedi($otazka['otazka_id']);
-
-        // Vytvoření pole pro JSON odpověď
-        $response = [
-            'status' => 'success',
-            'otazka' => $otazka,
-            'odpovedi' => $odpovedi,
-            'zbyvajiciCas' => max(0, $casovyLimit - $uplynulyCas)
-        ];
-
-        // Odeslání odpovědi ve formátu JSON
-        echo json_encode($response);
-        exit;
     }
-    
+
+    // Metoda pro ukončení kvízu
     private function ukoncitKviz() {
-        $pocetSpravnych = $_SESSION['pocetSpravnych'] ?? 0;
-        $pocetZobrazenych = count($_SESSION['zobrazenéOtázky'] ?? []);
-    
-        // Příprava dat pro odpověď
-        $response = [
+        echo json_encode([
             'status' => 'completed',
-            'pocetSpravnych' => $pocetSpravnych,
-            'pocetZobrazenych' => $pocetZobrazenych,
-            'message' => "Kvíz skončil. Máte $pocetSpravnych správných odpovědí z $pocetZobrazenych otázek."
-        ];
-    
-        // Odeslání odpovědi ve formátu JSON
-        echo json_encode($response);
-    
+            'pocetSpravnych' => $_SESSION['pocetSpravnych'],
+            'pocetZobrazenych' => count($_SESSION['zobrazenéOtázky']),
+            'message' => "Kvíz skončil. Máte " . $_SESSION['pocetSpravnych'] . " správných odpovědí z " . count($_SESSION['zobrazenéOtázky']) . " otázek."
+        ]);
+
         // Reset session dat pro kvíz
-        unset($_SESSION['pocetSpravnych'], $_SESSION['zobrazenéOtázky'], $_SESSION['kviz_id']);
+        $_SESSION['zacatekKvizu'] = null;
+        $_SESSION['casovyLimit'] = null;
+        $_SESSION['zbývajícíCas'] = null;
+        $_SESSION['kviz_id'] = null;
+        $_SESSION['pocetSpravnych'] = null;
+        $_SESSION['zobrazenéOtázky'] = null;
     }
 }
 
 $controller = new KvizController($conn);
 
-if (isset($_POST['action']) && $_POST['action'] === 'zpracujOdpoved') {
-    $otazka_id = $_POST['otazka_id'];
-    $moznost_id = $_POST['moznost_id'];
-    $kviz_id = $_POST['kviz_id'];
-
-    $controller->zpracujOdpoved($otazka_id, $moznost_id, $kviz_id);
-}
-
-if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
-    if (isset($_GET['action']) && $_GET['action'] === 'ziskatDalsiOtazku') {
-        $kviz_id = $_GET['kviz_id'];
-        $controller->ziskatDalsiOtazkuAjax($kviz_id);
+if (isset($_GET['action'])) {
+    switch ($_GET['action']) {
+        case 'zahajitKviz':
+            if (isset($_GET['kviz_id'])) {
+                $controller->inicializovatKviz($_GET['kviz_id']);
+            }
+            break;
+        case 'zpracujOdpoved':
+            if (isset($_GET['otazka_id']) && isset($_GET['moznost_id'])) {
+                $controller->zpracujOdpoved($_GET['otazka_id'], $_GET['moznost_id']);
+            }
+            break;
+        case 'ziskatDalsiOtazku':
+            if (isset($_GET['kviz_id'])) {
+                $controller->ziskatDalsiOtazkuAjax($_GET['kviz_id']);
+            }
+            break;
+        // Další případy...
     }
 }
-
 ?>

@@ -8,7 +8,11 @@
     <h1>Vyberte kvíz</h1>
     <ul>
     <?php foreach ($kvizy as $kviz): ?>
-        <li><a href="KvizProbiha.php?kviz_id=<?php echo $kviz['kviz_id']; ?>"><?php echo $kviz['nazev']; ?></a></li>
+        <li>
+            <a href="KvizProbihaView.php?kviz_id=<?php echo htmlspecialchars($kviz['kviz_id']); ?>">
+                <?php echo htmlspecialchars($kviz['nazev']); ?>
+            </a>
+        </li>
     <?php endforeach; ?>
     </ul>
 </body>
