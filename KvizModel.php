@@ -39,25 +39,6 @@ class KvizModel {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    /*public function ziskatNahodnouOtazku($kviz_id, $vylouceneOtazky) {
-        if (empty($vylouceneOtazky)) {
-            // Handle the case where there are no excluded question IDs.
-            $stmt = $this->db->prepare("SELECT * FROM otazky WHERE kviz_id = ?");
-            $stmt->execute([$kviz_id]);
-        } else {
-            $questionIds = implode(',', array_fill(0, count($vylouceneOtazky), '?'));
-    
-            $stmt = $this->db->prepare("SELECT * FROM otazky WHERE kviz_id = ? AND otazka_id NOT IN ($questionIds)");
-            $stmt->execute(array_merge([$kviz_id], $vylouceneOtazky));
-        }
-    
-        $otazky = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        if (count($otazky) > 0) {
-            return $otazky[array_rand($otazky)];
-        }
-        return null;
-    }*/
-
     public function ziskatOdpovedi($otazka_id) {
         $stmt = $this->db->prepare("SELECT * FROM moznosti WHERE otazka_id = ?");
         $stmt->execute([$otazka_id]);
