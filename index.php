@@ -8,8 +8,8 @@
 <body>
     <h1>QUISTORY</h1>
     <div>
-        <a href="prihlaseni.php">Přihlásit se</a>
-        <a href="registrace.php">Registrovat se</a>
+        <a href="./view/prihlaseni.php">Přihlásit se</a>
+        <a href="./view/registrace.php">Registrovat se</a>
     </div>
 </body>
 </html>
