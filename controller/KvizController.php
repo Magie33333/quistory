@@ -40,8 +40,7 @@ class KvizController {
         } else {
             echo json_encode(['status' => 'error', 'message' => 'Žádné otázky nebyly nalezeny.']);
         }
-    }
-    
+    }    
 
     // Tato metoda bude volána při zpracování odpovědí uživatele
     public function zpracujOdpoved($otazka_id, $moznost_id) {
@@ -148,6 +147,37 @@ public function pridatOtazku() {
     $this->kvizModel->pridatOtazku($kviz_id, $otazka_text, $moznosti);
 }
 
+public function upravitKviz() {
+    $kviz_id = $_POST['kviz_id'];
+    $nazev = $_POST['nazev'];
+    $popis = $_POST['popis'];
+
+    // Volání metody modelu pro úpravu kvízu
+    $this->kvizModel->upravitKviz($kviz_id, $nazev, $popis);
+}
+
+public function ziskatDetailKvizuAjax($kviz_id) {
+    header('Content-Type: application/json');
+    $kviz = $this->kvizModel->ziskatKvizPodleId($kviz_id);
+
+    if ($kviz) {
+        echo json_encode(['status' => 'success', 'kviz' => $kviz]);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Kvíz nenalezen']);
+    }
+}
+
+public function smazatKviz($kviz_id) {
+    $result = $this->kvizModel->smazatKviz($kviz_id);
+    
+    header('Content-Type: application/json');
+    if ($result) {
+        echo json_encode(['status' => 'success', 'message' => 'Kvíz byl smazán']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Nepodařilo se smazat kvíz']);
+    }
+}
+
 }
 
 $controller = new KvizController($conn);
@@ -159,12 +189,11 @@ if (isset($_GET['action'])) {
                 $controller->inicializovatKviz($_GET['kviz_id']);
             }
             break;
-            case 'ziskatNazevKvizu':
-                if (isset($_GET['kviz_id'])) {
-                    $controller->ziskatNazevKvizuAjax($_GET['kviz_id']);
+        case 'ziskatNazevKvizu':
+            if (isset($_GET['kviz_id'])) {
+                $controller->ziskatNazevKvizuAjax($_GET['kviz_id']);
                 }
-                break;
-
+            break;
         case 'zpracujOdpoved':
             if (isset($_GET['otazka_id']) && isset($_GET['moznost_id'])) {
                 $controller->zpracujOdpoved($_GET['otazka_id'], $_GET['moznost_id']);
@@ -175,6 +204,16 @@ if (isset($_GET['action'])) {
                 $controller->ziskatDalsiOtazkuAjax($_GET['kviz_id']);
             }
             break;
+        case 'ziskatDetailKvizu':
+            if (isset($_GET['kviz_id'])) {
+                $controller->ziskatDetailKvizuAjax($_GET['kviz_id']);
+            }
+            break;
+            case 'smazatKviz':
+                if (isset($_GET['kviz_id'])) {
+                    $controller->smazatKviz($_GET['kviz_id']);
+                }
+                break;
     }
 }
 
@@ -185,6 +224,9 @@ if (isset($_POST['action'])) {
             break;
         case 'pridatOtazku':
             $controller->pridatOtazku();
+            break;
+        case 'upravitKviz':
+            $controller->upravitKviz();
             break;
     }
 }

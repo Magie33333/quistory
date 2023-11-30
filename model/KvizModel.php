@@ -87,5 +87,25 @@ class KvizModel {
             $stmt->execute();
         }
     }
+
+    public function upravitKviz($kviz_id, $nazev, $popis) {
+        $sql = "UPDATE kvizy SET nazev = :nazev, popis = :popis WHERE kviz_id = :kviz_id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':kviz_id', $kviz_id);
+        $stmt->bindParam(':nazev', $nazev);
+        $stmt->bindParam(':popis', $popis);
+        $stmt->execute();
+    }
+
+    public function ziskatKvizPodleId($kviz_id) {
+        $stmt = $this->db->prepare("SELECT * FROM kvizy WHERE kviz_id = ?");
+        $stmt->execute([$kviz_id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function smazatKviz($kviz_id) {
+        $stmt = $this->db->prepare("DELETE FROM kvizy WHERE kviz_id = ?");
+        return $stmt->execute([$kviz_id]);
+    }
 }
 ?>

@@ -24,6 +24,7 @@ $jeAdmin = isset($_SESSION['uzivatel_jmeno']) && $_SESSION['uzivatel_jmeno'] == 
             <a href="./KvizProbihaView.php?kviz_id=<?php echo htmlspecialchars($kviz['kviz_id']); ?>">
                 <?php echo htmlspecialchars($kviz['nazev']); ?>
             </a>
+            <p><?php echo htmlspecialchars($kviz['popis']); ?></p>
         </li>
     <?php endforeach; ?>
     </ul>

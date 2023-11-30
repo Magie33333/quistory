@@ -7,7 +7,6 @@ if ($jeAdmin) {
 }
 ?>
 
-
 <!DOCTYPE html>
 <html lang="cs">
 <head>
@@ -17,7 +16,8 @@ if ($jeAdmin) {
 <body>
     <h1>Správa Kvízů</h1>
 
-    <a href="./VytvoritKviz.php">Vytvořit Nový Kvíz</a>
-    <a href="./PridatOtazku.php">Přidat Otázku do Kvízu</a>
+    <a href="./VytvoritKviz.php">Vytvořit Nový Kvíz</a><br>
+    <a href="./PridatOtazku.php">Přidat Otázku do Kvízu</a><br>
+    <a href="./UpravitKviz.php">Upravit Kvíz</a><br>
 </body>
 </html>

@@ -1,4 +1,11 @@
 <?php
+$jeAdmin = isset($_SESSION['uzivatel_jmeno']) && $_SESSION['uzivatel_jmeno'] == 'admin';
+if ($jeAdmin) {
+    // Uživatel není admin, přesměrování nebo zobrazení chyby
+    header('Location: ../index.php'); // Přesměrujte na hlavní stránku nebo na stránku přihlášení
+    exit;
+}
+
 include "../controller/KvizController.php";
 $kvizy = $controller->zobrazKvizy();
 ?>
