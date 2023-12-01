@@ -1,0 +1,46 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden; /* Zabrání horizontálnímu skrolování */
+}
+        .header {
+            box-sizing: border-box;
+            background-color: #cacaca;
+            border: 1px solid rgb(168, 16, 16);
+            padding: 10px 20px;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .user-menu {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: pointer;
+            padding-right: 1em;
+        }
+
+        
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%; /* nebo změňte na top: 50px; pokud chcete mít menu výše */
+            background-color: white;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 1001; /* zajišťuje, že dropdown je nad ostatními prvky */
+        }
+
+        /* Styl pro zobrazení menu po kliknutí */
+        .dropdown-menu.show {
+            display: block;
+            margin-right: 1em;
+        }

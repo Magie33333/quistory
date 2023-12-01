@@ -103,6 +103,12 @@ class KvizModel {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+    public function ziskatOtazkuPodleId($otazka_id) {
+        $stmt = $this->db->prepare("SELECT * FROM otazky WHERE otazka_id = ?");
+        $stmt->execute([$otazka_id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
     public function smazatKviz($kviz_id) {
         $stmt = $this->db->prepare("DELETE FROM kvizy WHERE kviz_id = ?");
         return $stmt->execute([$kviz_id]);
@@ -110,9 +116,13 @@ class KvizModel {
 
     public function upravitOtazku($otazka_id, $kviz_id, $otazka_text, $moznosti, $spravna_odpoved) {
         // Aktualizovat otázku
-        $sql = "UPDATE otazky SET otazka_text = :otazka_text, kviz_id = :kviz_id WHERE otazka_id = :otazka_id";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute(['otazka_text' => $otazka_text, 'kviz_id' => $kviz_id, 'otazka_id' => $otazka_id]);
+        try {
+            $sql = "UPDATE otazky SET otazka_text = :otazka_text, kviz_id = :kviz_id WHERE otazka_id = :otazka_id";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute(['otazka_text' => $otazka_text, 'kviz_id' => $kviz_id, 'otazka_id' => $otazka_id]);
+        } catch (PDOException $e) {
+            echo "Chyba při aktualizaci otázky: " . $e->getMessage();
+        }
     
         // Aktualizovat možnosti
         foreach ($moznosti as $moznost) {
@@ -124,6 +134,12 @@ class KvizModel {
             $stmt = $this->db->prepare($sql);
             $stmt->execute(['moznost_text' => $moznost_text, 'je_spravna' => $je_spravna, 'moznost_id' => $moznost_id]);
         }
+    }
+
+    public function ziskatVsechnyOtazky() {
+        $stmt = $this->db->prepare("SELECT otazka_id, otazka_text FROM otazky");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
 ?>

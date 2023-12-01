@@ -181,13 +181,22 @@ public function smazatKviz($kviz_id) {
 public function upravitOtazku() {
     $otazka_id = $_POST['otazka_id'];
     $otazka_text = $_POST['otazka_text'];
-    $kviz_id = $_POST['kviz_id'];
-    $moznosti = $_POST['moznosti']; // Předpokládáme, že toto je pole s možnostmi
+    $kviz_id = $_POST['kviz_id']; // ID kvízu získané z formuláře
+    $moznosti = $_POST['moznosti'];
     $spravna_odpoved = $_POST['spravna_odpoved'];
 
-    $this->kvizModel->upravitOtazku($otazka_id, $kviz_id, $otazka_text, $moznosti, $spravna_odpoved);
+    try {
+        // Upravit otázku s novými hodnotami
+        $this->kvizModel->upravitOtazku($otazka_id, $kviz_id, $otazka_text, $moznosti, $spravna_odpoved);
 
-    // Přesměrování zpět na stránku úprav nebo zobrazení zprávy o úspěchu
+        // Přesměrování a zobrazení úspěšné zprávy
+        header('Location: ../view/SpravaKvizuView.php');
+        exit();
+    } catch (Exception $e) {
+        // Přesměrování a zobrazení chybové zprávy
+        header('Location: ../view/SpravaKvizuView.php');
+        exit();
+    }
 }
 
 public function ziskatMoznostiOtazkyAjax($otazka_id) {
@@ -198,6 +207,22 @@ public function ziskatMoznostiOtazkyAjax($otazka_id) {
         echo json_encode(['status' => 'success', 'moznosti' => $moznosti]);
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Možnosti nebyly nalezeny']);
+    }
+}
+
+public function zobrazVsechnyOtazky() {
+    return $this->kvizModel->ziskatVsechnyOtazky();
+}
+
+public function ziskatDetailOtazkyAjax($otazka_id) {
+    header('Content-Type: application/json');
+    $otazka = $this->kvizModel->ziskatOtazkuPodleId($otazka_id);
+    $moznosti = $this->kvizModel->ziskatOdpovedi($otazka_id);
+
+    if ($otazka) {
+        echo json_encode(['status' => 'success', 'otazka' => $otazka, 'moznosti' => $moznosti]);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Otázka nenalezena']);
     }
 }
 
@@ -242,6 +267,12 @@ if (isset($_GET['action'])) {
                     $controller->ziskatMoznostiOtazkyAjax($_GET['otazka_id']);
                 }
                 break;
+        case 'ziskatDetailOtazky':
+                if (isset($_GET['otazka_id'])) {
+                    $controller->ziskatDetailOtazkyAjax($_GET['otazka_id']);
+                }
+                break;
+
     }
 }
 
