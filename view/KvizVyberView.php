@@ -8,9 +8,13 @@ $jeAdmin = isset($_SESSION['uzivatel_jmeno']) && $_SESSION['uzivatel_jmeno'] == 
 <head>
     <meta charset="UTF-8">
     <title>Výběr Kvízu</title>
+    <link rel="stylesheet" href="../css/soft-ui-dashboard.css">
 </head>
 <body>
+
+
     <h1>Vyberte kvíz</h1>
+
     
     <?php if ($jeAdmin): ?>
         <div>

@@ -19,5 +19,6 @@ if ($jeAdmin) {
     <a href="./VytvoritKviz.php">Vytvořit Nový Kvíz</a><br>
     <a href="./PridatOtazku.php">Přidat Otázku do Kvízu</a><br>
     <a href="./UpravitKviz.php">Upravit Kvíz</a><br>
+    <a href="./UpravitOtazku.php">Upravit otázku</a><br>
 </body>
 </html>

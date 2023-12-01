@@ -178,6 +178,29 @@ public function smazatKviz($kviz_id) {
     }
 }
 
+public function upravitOtazku() {
+    $otazka_id = $_POST['otazka_id'];
+    $otazka_text = $_POST['otazka_text'];
+    $kviz_id = $_POST['kviz_id'];
+    $moznosti = $_POST['moznosti']; // Předpokládáme, že toto je pole s možnostmi
+    $spravna_odpoved = $_POST['spravna_odpoved'];
+
+    $this->kvizModel->upravitOtazku($otazka_id, $kviz_id, $otazka_text, $moznosti, $spravna_odpoved);
+
+    // Přesměrování zpět na stránku úprav nebo zobrazení zprávy o úspěchu
+}
+
+public function ziskatMoznostiOtazkyAjax($otazka_id) {
+    $moznosti = $this->kvizModel->ziskatOdpovedi($otazka_id);
+    
+    header('Content-Type: application/json');
+    if ($moznosti) {
+        echo json_encode(['status' => 'success', 'moznosti' => $moznosti]);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Možnosti nebyly nalezeny']);
+    }
+}
+
 }
 
 $controller = new KvizController($conn);
@@ -209,9 +232,14 @@ if (isset($_GET['action'])) {
                 $controller->ziskatDetailKvizuAjax($_GET['kviz_id']);
             }
             break;
-            case 'smazatKviz':
+        case 'smazatKviz':
                 if (isset($_GET['kviz_id'])) {
                     $controller->smazatKviz($_GET['kviz_id']);
+                }
+                break;
+        case 'ziskatMoznostiOtazky':
+                if (isset($_GET['otazka_id'])) {
+                    $controller->ziskatMoznostiOtazkyAjax($_GET['otazka_id']);
                 }
                 break;
     }
@@ -227,6 +255,9 @@ if (isset($_POST['action'])) {
             break;
         case 'upravitKviz':
             $controller->upravitKviz();
+            break;
+        case 'upravitOtazku':
+            $controller->upravitOtazku();
             break;
     }
 }

@@ -107,5 +107,23 @@ class KvizModel {
         $stmt = $this->db->prepare("DELETE FROM kvizy WHERE kviz_id = ?");
         return $stmt->execute([$kviz_id]);
     }
+
+    public function upravitOtazku($otazka_id, $kviz_id, $otazka_text, $moznosti, $spravna_odpoved) {
+        // Aktualizovat otázku
+        $sql = "UPDATE otazky SET otazka_text = :otazka_text, kviz_id = :kviz_id WHERE otazka_id = :otazka_id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['otazka_text' => $otazka_text, 'kviz_id' => $kviz_id, 'otazka_id' => $otazka_id]);
+    
+        // Aktualizovat možnosti
+        foreach ($moznosti as $moznost) {
+            $moznost_id = $moznost['id']; // ID možnosti
+            $moznost_text = $moznost['text']; // Text možnosti
+            $je_spravna = ($moznost_id == $spravna_odpoved) ? 1 : 0;
+    
+            $sql = "UPDATE moznosti SET moznost_text = :moznost_text, je_spravna = :je_spravna WHERE moznost_id = :moznost_id";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute(['moznost_text' => $moznost_text, 'je_spravna' => $je_spravna, 'moznost_id' => $moznost_id]);
+        }
+    }
 }
 ?>
