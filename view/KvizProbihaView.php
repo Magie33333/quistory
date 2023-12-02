@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Kvíz</title>
+    <link rel="stylesheet" href="../css/kvizz.css">
+
     <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', function() {
         const kvizId = new URLSearchParams(window.location.search).get('kviz_id');
@@ -127,32 +129,33 @@
         }
 
         function aktualizovatOtazkuAOdpovedi(otazka, odpovedi) {
+    const otazkaTextElem = document.getElementById('otazkaText');
+    otazkaTextElem.textContent = otazka.otazka_text;
 
-            const otazkaTextElem = document.getElementById('otazkaText');
-            otazkaTextElem.textContent = otazka.otazka_text;
+    const odpovediElem = document.getElementById('odpovedi');
+    odpovediElem.innerHTML = '';
 
+    odpovedi.forEach(function(odpoved) {
+        const label = document.createElement('label');
+        label.className = "odpoved-container"; // Přidání třídy pro stylování
 
+        const input = document.createElement('input');
+        input.type = 'radio';
+        input.name = 'moznost_id';
+        input.value = odpoved.moznost_id;
+        input.id = 'moznost_' + odpoved.moznost_id;
 
-            const odpovediElem = document.getElementById('odpovedi');
-            odpovediElem.innerHTML = '';
+        const span = document.createElement('span');
+        span.textContent = odpoved.moznost_text;
+        span.className = "odpoved-text"; // Přidání třídy pro stylování
 
-            odpovedi.forEach(function(odpoved) {
-                const div = document.createElement('div');
-                const input = document.createElement('input');
-                input.type = 'radio';
-                input.name = 'moznost_id';
-                input.value = odpoved.moznost_id;
-                input.id = 'moznost_' + odpoved.moznost_id;
-                const label = document.createElement('label');
-                label.htmlFor = input.id;
-                label.textContent = odpoved.moznost_text;
-                div.appendChild(input);
-                div.appendChild(label);
-                odpovediElem.appendChild(div);
-            });
+        label.appendChild(input);
+        label.appendChild(span); // Vložení textu do span místo přímo do label pro lepší kontrolu stylu
+        odpovediElem.appendChild(label);
+        });
 
-            kvizFormular.querySelector('input[name="otazka_id"]').value = otazka.otazka_id;
-            kvizFormular.querySelector('input[type="submit"]').disabled = false;
+        kvizFormular.querySelector('input[name="otazka_id"]').value = otazka.otazka_id;
+        kvizFormular.querySelector('input[type="submit"]').disabled = false;
         }
 
         function ukoncitKviz(message) {
@@ -161,6 +164,8 @@
         }
     });
     </script>
+
+    
 </head>
 
 <body>
@@ -173,9 +178,11 @@
         </div>
         <input type="hidden" name="otazka_id" value="">
         <input type="hidden" name="kviz_id" value="<?php echo htmlspecialchars($kvizId); ?>">
-        <input type="submit" value="Odpovědět" disabled>
+        <div class="form-footer">
+            <input type="submit" value="Odpovědět" disabled>
+        </div>
     </form>
-    <div>Čas do ukončení kvízu: <span id="zbyvajiciCas">60</span> sekund</div>
+    <div><span id="zbyvajiciCas">60</span></div>
 </body>
 
 </html>

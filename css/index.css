@@ -1,0 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700&display=swap');
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Quicksand', sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    text-align: center;
+}
+
+h1 {
+    font-size: 5em;
+    color: #333;
+    margin: 0.5em 0;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3); /* Silnější stín pro více zvýraznění */
+    background: -webkit-linear-gradient(45deg, #f5f7fa, #8DC26F);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: fadeIn 2s ease-in-out 0s 1 forwards;
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(-20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+div {
+    margin-top: 30px;
+}
+
+a {
+    display: inline-block;
+    margin: 0 15px;
+    padding: 15px 30px;
+    background-color: #89b497;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    font-size: 1.2em;
+    opacity: 0;
+    transform: translateY(-20px);
+    animation: fadeIn 2s ease-in-out 0.5s forwards; /* Spuštění animace s malým zpožděním */
+}
+
+a:hover {
+    background-color: #76b852;
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Responzivní design pro menší obrazovky */
+@media (max-width: 720px) {
+    h1 {
+        font-size: 50em;
+    }
+
+    div {
+        margin-top: 20px; /* Větší odstup od nadpisu */
+    }
+
+    a {
+        padding: 12px 24px; /* Větší padding pro lepší cílení prstů */
+        font-size: 5em; /* Větší font pro lepší čitelnost */
+        margin: 10px; /* Větší odstup mezi tlačítky */
+        min-width: 200px; /* Minimální šířka tlačítka pro snadnější stisknutí */
+    }
+}

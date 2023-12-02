@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Přihlášení</title>
-    <!-- Link k CSS souboru -->
+    <link rel="stylesheet" href="../css/form.css">
 </head>
 <body>
     <h2>Přihlášení</h2>
-
+    <?php include "./statusMessage.php"; displayStatusMessage(); ?>
     <form action="../controller/UzivatelController.php" method="post">
         <div>
             <label for="username">Uživatelské jméno:</label>

@@ -1,6 +1,7 @@
 <?php
 include '../model/UzivatelModel.php';
 include '../conf/connect.php';
+session_start();
 
 class UzivatelController {
     private $uzivatelModel;
@@ -13,14 +14,35 @@ class UzivatelController {
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $username = trim($_POST['username']);
             $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+            $password_confirm = $_POST['password_confirm'];
+
+            // Ověření shody hesel
+            if ($_POST['password'] !== $password_confirm) {
+                $_SESSION['status_message'] = 'Registrace selhala. Zadaná hesla se neshodují.';
+                $_SESSION['status_type'] = 'error';
+                header('Location: ../view/registrace.php');
+                exit;
+            }
+            
+            // Kontrola honeypot pole
+            if (!empty($_POST['confirm_password_honeypot'])) {
+                // Pravděpodobně bot, ukončete skript nebo zalogujte pokus o registraci
+                die("Bot detekován!");
+            }
 
             if ($this->uzivatelModel->registrace($username, $password)) {
                 // Registrace byla úspěšná
-                header('Location: ../view/prihlaseni.php'); // Přesměrování na přihlašovací stránku
+                $_SESSION['status_message'] = 'Registrace byla úspěšná. Nyní se můžete přihlásit.';
+                $_SESSION['status_type'] = 'success'; // Typ může být 'success' nebo 'error'
+                header('Location: ../view/prihlaseni.php');
+                exit;
             } else {
-                // Registrace selhala (uživatelské jméno již existuje)
-                echo "Uživatelské jméno již existuje.";
+                $_SESSION['status_message'] = 'Registrace selhala. Uživatelské jméno již existuje.';
+                $_SESSION['status_type'] = 'error';
+                header('Location: ../view/registrace.php');
+                exit;
             }
+            
         }
     }
 
@@ -41,7 +63,10 @@ class UzivatelController {
 
             } else {
                 // Přihlášení selhalo
-                echo "Nesprávné uživatelské jméno nebo heslo.";
+                $_SESSION['status_message'] = 'Přihlášení selhalo. Nesprávné jméno nebo heslo.';
+                $_SESSION['status_type'] = 'error'; // Typ může být 'success' nebo 'error'
+                header('Location: ../view/prihlaseni.php');
+                exit;
             }
         }
     }

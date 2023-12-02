@@ -1,46 +1,208 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700&display=swap');
+
 html, body {
+    height: 100%; /* Zajistí, že html a body budou mít minimální výšku obrazovky */
+    min-height: 100%; /* Zajistí, že html a body budou mít minimální výšku obrazovky */
     margin: 0;
     padding: 0;
-    overflow-x: hidden; /* Zabrání horizontálnímu skrolování */
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    font-family: 'Quicksand', sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
 }
-        .header {
-            box-sizing: border-box;
-            background-color: #cacaca;
-            border: 1px solid rgb(168, 16, 16);
-            padding: 10px 20px;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
-        }
 
-        .user-menu {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            cursor: pointer;
-            padding-right: 1em;
-        }
+.header {
+    box-sizing: border-box;
+    background-color: #89b497; /* Tmavší zelená */
+    background-image: linear-gradient(to right, #76b852, #8DC26F); /* Zelený gradient pro hravější vzhled */
+    color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    border-bottom: 2px solid #89b497; /* Tmavší zelená */
+    padding: 10px 20px;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+    /* Zajištění, že hlavička má vždy vhodnou výšku */
+    height: 50px;
+}
 
-        
+.header div:first-child {
+    font-size: 2em; /* Větší velikost fontu pro název kvízu */
+    font-weight: bold; /* Tučnější font */
+    color: #fff; /* Bílý text pro název kvízu */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Stín pro lepší čitelnost */
+    /* ... */
+}
 
-        .dropdown-menu {
-            display: none;
-            position: absolute;
-            right: 0;
-            top: 100%; /* nebo změňte na top: 50px; pokud chcete mít menu výše */
-            background-color: white;
-            border: 1px solid #ddd;
-            padding: 10px;
-            border-radius: 5px;
-            z-index: 1001; /* zajišťuje, že dropdown je nad ostatními prvky */
-        }
+.user-menu:before {
+    content: '\1F464'; /* Příklad: Unicode ikona uživatele */
+    font-size: 1.2em; /* Větší ikona */
+    margin-right: 10px; /* Odstup mezi ikonou a textem */
+}
 
-        /* Styl pro zobrazení menu po kliknutí */
-        .dropdown-menu.show {
-            display: block;
-            margin-right: 1em;
-        }
+.user-menu {
+    display: inline-block;
+    position: relative;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    cursor: pointer;
+    color: #333;
+    padding-right: 1em;
+    max-width: 30%;
+}
+
+.user-menu::after {
+    content: '';
+    position: absolute;
+    bottom: -2px; /* Umístíme podtržení pod text */
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: transparent; /* Začneme s průhlednou barvou */
+    transition: background-color 0.5s ease;
+}
+
+.user-menu:hover::after {
+    background-color: #333; /* Změníme barvu při najetí myší */
+}
+
+.user-menu.show::after,
+.user-menu.show:hover::after {
+    background-color: transparent; /* Udržíme průhlednou barvu, když je dropdown otevřený */
+}
+
+.user-menu .dropdown-menu a {
+    display: inline-block; /* Změníme na inline-block pro lepší kontrolu velikosti */
+    background-color: #ffffff; /* Plná bílá barva pro lepší viditelnost */
+    color: #333; /* Tmavší text */
+    padding: 5px 10px; /* Menší padding pro menší velikost tlačítka */
+    border-radius: 4px; /* Zaoblené rohy */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Drobný stín pro lepší výraz */
+    text-decoration: none; /* Žádné podtržení textu */
+    font-size: 0.5em; /* Menší velikost písma */
+    transition: background-color 0.3s, transform 0.3s; /* Přidání přechodu pro animaci */
+}
+
+.user-menu .dropdown-menu a:hover {
+    background-color: #76b852; /* Změna barvy při najetí myši */
+    transform: scale(1.05); /* Lehké zvětšení tlačítka pro efekt */
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 40px;
+    background-color: white;
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+    width: auto;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 1001;
+    opacity: 0; /* Začínáme s průhledností 0 pro efekt "fadeIn" */
+    visibility: hidden; /* Skryje menu, když není v použití */
+    transition: visibility 0s, opacity 0.3s linear; /* Animace pro průhlednost a viditelnost */
+}
+
+.dropdown-menu.show {
+    display: block;
+    opacity: 1; /* Plná neprůhlednost pro zobrazení menu */
+    visibility: visible; /* Nastavíme menu jako viditelné */
+    margin-right: 1em;
+}
+
+
+h1 {
+    color: #333;
+    padding-top: 100px; /* Zvětšený padding pro lepší vzhled */
+    padding: 70px 20px 20px; /* Odsazení kvůli fixované hlavičce */
+    text-align: center;
+}
+
+ul {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+    list-style: none;
+}
+
+ul li {
+    background-color: #fff;
+    margin-bottom: 15px;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+ul li:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+ul li a {
+    display: block;
+    color: #5d5d5d;
+    font-weight: bold;
+    text-decoration: none;
+    margin-bottom: 5px;
+}
+
+ul li a p {
+    color: #9e9e9e;
+    font-size: 14px;
+    font-weight: normal;
+}
+
+.admin-panel {
+    text-align: center; /* Zarovnání na střed */
+    margin: 20px 0; /* Přidáváme nějaký prostor nad a pod odkazem */
+}
+
+.admin-link {
+    display: inline-block; /* Pro správné zarovnání a padding */
+    background-color: #f5f7fa; /* Světlé pozadí pro kontrast */
+    color: #333; /* Tmavší text */
+    padding: 10px 15px; /* Padding pro odkaz */
+    border-radius: 5px; /* Zaoblené rohy */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Stín pro hloubku */
+    text-decoration: none; /* Bez podtržení */
+    font-size: 1em; /* Velikost písma */
+    margin-top: -20px; /* Posuneme trochu nahoru */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Přidáváme přechody pro animaci */
+}
+
+.admin-link:hover {
+    transform: translateY(-5px); /* Posune odkaz nahoru při najetí myši */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Zvětšuje stín pro "zvednutí" efekt */
+}
+
+.admin-icon {
+    margin-right: 5px; /* Odstup ikony od textu */
+    font-size: 1.2em; /* Větší ikona */
+}
+
+
+/* Responzivní design */
+@media (max-width: 600px) {
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px;
+        height: auto; /* Automatická výška pro vertikální layout */
+    }
+
+    .user-menu {
+        padding-top: 10px;
+        max-width: 100%; /* Na malých zařízeních může jméno uživatele zabírat plnou šířku */
+        padding-right: 0; /* Odebrání paddingu na malých zařízeních */
+        text-align: left; /* Zarovnání textu doleva na malých zařízeních */
+    }
+}

@@ -1,0 +1,95 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700&display=swap');
+
+/* Základní styly */
+html, body {
+    height: 100%;
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    font-family: 'Quicksand', sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+/* Styly pro kvíz */
+#kvizFormular {
+    max-width: 700px; /* Zvětšení šířky formuláře */
+    margin: 100px auto; /* Zvětšení horního okraje */
+    padding: 30px; /* Větší padding */
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+#nazevKvizu {
+    text-align: center; /* Centrování názvu kvízu */
+    font-size: 2em; /* Větší velikost fontu pro název */
+    margin-bottom: 30px; /* Větší mezera pod názvem */
+}
+
+/* Styl pro otázky a odpovědi */
+#otazkaText {
+    font-size: 1.5em; /* Větší velikost fontu pro otázku */
+    margin-bottom: 30px; /* Větší mezera pod otázkou */
+    color: #333;
+}
+
+.odpoved-container {
+    margin-bottom: 25px; /* Větší mezera mezi odpověďmi */
+    cursor: pointer;
+}
+
+.odpoved-container input[type="radio"] {
+    display: none;
+}
+
+.odpoved-text {
+    padding: 15px 20px; /* Větší padding pro odpovědi */
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    display: inline-block;
+    width: calc(100% - 40px); /* Upravená šířka pro větší padding */
+    transition: all 0.3s ease;
+    font-size: 1.5em; /* Zvětšení velikosti textu v možnostech */
+    margin-bottom: 10px;
+}
+
+.odpoved-container input[type="radio"]:checked + .odpoved-text {
+    background-color: #c3cfe2;
+    border-color: #89b497;
+    color: #333;
+}
+
+/* Styl tlačítka */
+input[type="submit"] {
+    width: 100%;
+    background-color: #8DC26F;
+    color: white;
+    border: none;
+    padding: 20px; /* Zvětšení paddingu tlačítka */
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-top: 30px; /* Větší mezera mezi poslední odpovědí a tlačítkem */
+}
+
+input[type="submit"]:hover {
+    background-color: #76b852;
+}
+
+input[type="submit"]:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Styl časovače */
+#zbyvajiciCas {
+    font-weight: bold;
+    color: #333;
+    margin-top: 10px;
+    display: block;
+    text-align: center;
+    font-size: 1.2em;
+}
