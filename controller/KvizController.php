@@ -101,28 +101,51 @@ public function ziskatDalsiOtazkuAjax($kviz_id) {
 
 
     // Metoda pro ukončení kvízu
-private function ukoncitKviz() {
+    public function ukoncitKviz() {
+        header('Content-Type: application/json');
+    
+        $pocetSpravnych = $_SESSION['pocetSpravnych'] ?? 0;
+        $unikatniOtazky = array_unique($_SESSION['zobrazenéOtázky'] ?? []);
+        $pocetUnikatnichOtazek = count($unikatniOtazky);
+    
+        echo json_encode([
+            'status' => 'completed',
+            'pocetSpravnych' => $pocetSpravnych,
+            'pocetZobrazenych' => $pocetUnikatnichOtazek,
+            'message' => "Kvíz skončil. Máte $pocetSpravnych správných odpovědí z $pocetUnikatnichOtazek otázek."
+        ]);
+    
+        // Reset session dat pro kvíz
+        $_SESSION['zacatekKvizu'] = null;
+        $_SESSION['casovyLimit'] = null;
+        $_SESSION['zbývajícíCas'] = null;
+        $_SESSION['kviz_id'] = null;
+        $_SESSION['pocetSpravnych'] = null;
+        $_SESSION['zobrazenéOtázky'] = [];
+    }
+
+/*public function ukoncitKvizz($kviz_id) {
     header('Content-Type: application/json');
 
-    // Odstranění duplicitních hodnot z pole
-    $unikatniOtazky = array_unique($_SESSION['zobrazenéOtázky']);
-    $pocetUnikatnichOtazek = count($unikatniOtazky);
+    // Zde můžete doplnit logiku pro zpracování výsledků kvízu
+    $pocetSpravnych = $_SESSION['pocetSpravnych'] ?? 0;
+    $pocetOtazek = count($_SESSION['zobrazenéOtázky'] ?? []);
 
     echo json_encode([
-        'status' => 'completed',
-        'pocetSpravnych' => $_SESSION['pocetSpravnych'],
-        'pocetZobrazenych' => $pocetUnikatnichOtazek,
-        'message' => "Kvíz skončil. Máte " . $_SESSION['pocetSpravnych'] . " správných odpovědí z " . $pocetUnikatnichOtazek . " otázek."
+        'status' => 'expired',
+        'pocetSpravnych' => $pocetSpravnych,
+        'pocetOtazek' => $pocetOtazek,
+        'message' => "Kvíz skončil. Máte $pocetSpravnych správných odpovědí z $pocetOtazek otázek."
     ]);
 
-    // Reset session dat pro kvíz
-    $_SESSION['zacatekKvizu'] = null;
-    $_SESSION['casovyLimit'] = null;
-    $_SESSION['zbývajícíCas'] = null;
-    $_SESSION['kviz_id'] = null;
-    $_SESSION['pocetSpravnych'] = null;
-    $_SESSION['zobrazenéOtázky'] = [];
-}
+     // Reset session dat pro kvíz
+     $_SESSION['zacatekKvizu'] = null;
+     $_SESSION['casovyLimit'] = null;
+     $_SESSION['zbývajícíCas'] = null;
+     $_SESSION['kviz_id'] = null;
+     $_SESSION['pocetSpravnych'] = null;
+     $_SESSION['zobrazenéOtázky'] = [];
+}*/
 
 public function vytvoritKviz() {
     $nazev = $_POST['nazev'];
@@ -272,6 +295,12 @@ if (isset($_GET['action'])) {
                     $controller->ziskatDetailOtazkyAjax($_GET['otazka_id']);
                 }
                 break;
+
+        case 'ukoncitKviz':
+            if (isset($_GET['kviz_id'])) {
+                    $controller->ukoncitKviz($_GET['kviz_id']);
+            }
+            break;
 
     }
 }

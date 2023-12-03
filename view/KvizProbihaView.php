@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Kvíz</title>
-    <link rel="stylesheet" href="../css/kvizz.css">
+    <link rel="stylesheet" href="../css/kviz.css">
 
     <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', function() {
@@ -59,10 +59,15 @@
         function odpocetCasu() {
             if (zbyvajiciCas <= 0) {
                 clearInterval(odpocetIntervalu);
-                ukoncitKviz('Čas kvízu vypršel!');
+                ukoncitKvizCas();
                 
             } else {
+                if (zbyvajiciCas == 59) { // Hudba se spustí, když začne odpočet
+                    spustitHudbu();
+                }
                 zbyvajiciCasElem.textContent = zbyvajiciCas;
+                const total = 282; // Celkový obvod kruhu
+                document.getElementById('casovacKruh').style.strokeDashoffset = ((60 - zbyvajiciCas) / 60) * total;
                 zbyvajiciCas--;
             }
         }
@@ -158,10 +163,38 @@
         kvizFormular.querySelector('input[type="submit"]').disabled = false;
         }
 
-        function ukoncitKviz(message) {
-            alert(message);
-            window.location.href = './KvizVyber.php';
+        function ukoncitKvizCas() {
+        fetch('../controller/KvizController.php?action=ukoncitKviz&kviz_id=' + kvizId)
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'completed') {
+                // Zobrazit výsledky kvízu
+                alert(data.message); // Zde můžete přizpůsobit způsob zobrazení výsledků
+                window.location.href = './KvizVyber.php';
+            }
+        })
+        .catch(error => {
+            console.error('Chyba při ukončování kvízu: ', error);
+        });
+    }
+
+    function ukoncitKviz($datamessage) {
+        alert($datamessage); // Zde můžete přizpůsobit způsob zobrazení výsledků
+        window.location.href = './KvizVyber.php';
+    }
+        
+        var hudba = document.getElementById('kvizHudba');
+        hudba.volume = 0.5; // Nastaví hlasitost na 50%
+
+        function spustitHudbu() {
+            if (hudba.paused) {
+                hudba.play().catch(e => {
+                    console.log("Audio nelze automaticky přehrát - bude vyžadována interakce uživatele.");
+                    // Zde můžete přidat upozornění pro uživatele nebo tlačítko pro spuštění hudby
+                });
+            }
         }
+
     });
     </script>
 
@@ -182,7 +215,17 @@
             <input type="submit" value="Odpovědět" disabled>
         </div>
     </form>
-    <div><span id="zbyvajiciCas">60</span></div>
+    <div id="casovacContainer">
+        <svg id="casovacSvg" width="100" height="100">
+            <circle id="casovacKruh" cx="50" cy="50" r="45" stroke-width="5" stroke="#76b852" fill="transparent" />
+        </svg>
+        <span id="zbyvajiciCas">60</span>
+    </div>
+
+    <audio id="kvizHudba">
+    <source src="../conf/audio/FinalChase.mp3" type="audio/mpeg">
+    Váš prohlížeč nepodporuje audio element.
+</audio>
 </body>
 
 </html>
