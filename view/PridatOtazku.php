@@ -14,16 +14,17 @@ $kvizy = $controller->zobrazKvizy();
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
-    <title>Přidání Otázky</title>
+    <title>Přidání otázky</title>
+    <link rel="stylesheet" href="../css/sprava.css">
 </head>
 <body>
-    <h1>Přidat Otázku do Kvízu</h1>
+    <h1>Přidat otázku do kvízu</h1>
 
     <form action="../controller/KvizController.php" method="post">
         <input type="hidden" name="action" value="pridatOtazku">
         
         <div>
-            <label for="kviz_id">Vyberte Kvíz:</label>
+            <label for="kviz_id">Vyberte kvíz:</label>
             <select id="kviz_id" name="kviz_id" required>
                 <!-- Tady by měly být dynamicky generované možnosti kvízů -->
                 <!-- Příklad: -->
@@ -37,7 +38,7 @@ $kvizy = $controller->zobrazKvizy();
         </div>
 
         <div>
-            <label for="otazka_text">Text Otázky:</label>
+            <label for="otazka_text">Text otázky:</label>
             <textarea id="otazka_text" name="otazka_text" required></textarea>
         </div>
 

@@ -16,6 +16,7 @@ $otazky = $controller->zobrazVsechnyOtazky(); // Předpokládáme, že tato meto
 <head>
     <meta charset="UTF-8">
     <title>Úprava Otázky</title>
+    <link rel="stylesheet" href="../css/sprava.css">
     <script>
     function nacistDataOtazky(otazkaId) {
     fetch('../controller/KvizController.php?action=ziskatDetailOtazky&otazka_id=' + otazkaId)

@@ -1,0 +1,103 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700&display=swap');
+
+html {
+    height: 100%;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+
+body {
+    min-height: 100vh; /* This will make sure the body stretches to at least the full height of the viewport */
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    text-align: center;
+    padding-top: 120px;
+    font-family: 'Quicksand', sans-serif;
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 30px; /* Odstup mezi nadpisem a tlačítky */
+}
+
+a {
+    display: inline-block; /* Tlačítka vedle sebe */
+    margin: 10px; /* Odstup mezi tlačítky */
+    padding: 10px 20px; /* Vnitřní odsazení tlačítka */
+    background-color: #76b852; /* Zelené pozadí */
+    color: white; /* Bílý text */
+    text-decoration: none; /* Žádné podtržení */
+    border-radius: 5px; /* Zaoblené rohy */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Drobný stín */
+    transition: background-color 0.3s, transform 0.3s; /* Animace přechodu */
+}
+
+a:hover {
+    background-color: #89b497; /* Tmavší zelená při najetí myší */
+    transform: translateY(-3px); /* Posunutí tlačítka nahoru */
+}
+
+label {
+    display: block; /* Zajišťuje, že každý popisek bude na novém řádku */
+    margin: 20px 0 10px; /* Odstup nad a pod popiskem */
+    color: #333; /* Barva textu */
+    font-size: 1.3em; /* Velikost písma */
+}
+
+input[type="text"],
+textarea {
+    width: 30%; /* Šířka textových polí */
+    padding: 10px; /* Vnitřní odsazení */
+    margin-bottom: 20px; /* Odstup mezi prvky formuláře */
+    border: 1px solid #ddd; /* Okraj */
+    border-radius: 4px; /* Zaoblené rohy */
+    font-family: 'Quicksand', sans-serif; /* Stejný font jako zbytek stránky */
+    font-size: 1.3em;
+}
+
+textarea {
+    resize: vertical; /* Umožňuje uživateli změnit velikost textového pole jen vertikálně */
+    height: 150px; /* Výchozí výška textového pole */
+}
+
+button {
+    display: block; /* Tlačítko vedle sebe */
+    background-color: #76b852; /* Zelené pozadí */
+    color: white; /* Bílý text */
+    padding: 10px 20px; /* Vnitřní odsazení */
+    border: none; /* Žádný okraj */
+    border-radius: 5px; /* Zaoblené rohy */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Drobný stín */
+    cursor: pointer; /* Změní kurzor na ukazatel, když je nad tlačítkem */
+    transition: background-color 0.3s, transform 0.3s; /* Animace přechodu */
+    font-family: 'Quicksand', sans-serif;
+    font-size: 1.3em;
+    margin: 20px auto; /* Centrování tlačítka */
+    width: fit-content;
+}
+
+button:hover {
+    background-color: #89b497; /* Tmavší zelená při najetí myší */
+    transform: translateY(-3px); /* Posunutí tlačítka nahoru */
+}
+
+@media (max-width: 600px) {
+    body {
+        padding-top: 100px;
+    }
+
+    a {
+        display: block; /* Tlačítka pod sebou na malých zařízeních */
+        margin: 10px auto; /* Centrování tlačítek */
+        width: 80%; /* Šířka tlačítek */
+    }
+
+    input[type="text"],
+    textarea,
+    button {
+        width: 95%; /* Šířka textových polí a tlačítka na malých zařízeních */
+        margin-left: auto;
+        margin-right: auto; /* Centrování prvků */
+    }
+}

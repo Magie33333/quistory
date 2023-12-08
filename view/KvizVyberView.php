@@ -31,8 +31,14 @@ $jeAdmin = isset($_SESSION['uzivatel_jmeno']) && $_SESSION['uzivatel_jmeno'] == 
         <li>
             <a href="./KvizProbihaView.php?kviz_id=<?php echo htmlspecialchars($kviz['kviz_id']); ?>">
                 <?php echo htmlspecialchars($kviz['nazev']); ?>
+                <i class="fa-regular fa-circle-play fa-2xl"></i>
                 <p><?php echo htmlspecialchars($kviz['popis']); ?></p>
             </a>
+            <div class="high-score-icon-container">
+                <a href="./VysledkyView.php?kviz_id=<?php echo htmlspecialchars($kviz['kviz_id']); ?>" title="High Score">
+                    <i class="fa-solid fa-clipboard-list fa-2xl"></i>
+                </a>
+            </div>
         </li>
     <?php endforeach; ?>
     </ul>

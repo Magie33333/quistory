@@ -14,7 +14,8 @@ $kvizy = $controller->zobrazKvizy();
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
-    <title>Úprava Kvízu</title>
+    <title>Úprava kvízu</title>
+    <link rel="stylesheet" href="../css/sprava.css">
     <script>
     function nacistDetailKvizu(kvizId) {
         fetch('../controller/KvizController.php?action=ziskatDetailKvizu&kviz_id=' + kvizId)
@@ -33,25 +34,25 @@ $kvizy = $controller->zobrazKvizy();
     }
     
     function smazatKviz() {
-    var kvizId = document.getElementById('kviz_id').value;
-    if(confirm('Opravdu chcete smazat tento kvíz?')) {
-        fetch('../controller/KvizController.php?action=smazatKviz&kviz_id=' + kvizId, {
-            method: 'GET'
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                alert('Kvíz byl úspěšně smazán.');
-                window.location.reload(); // Reload stránky nebo přesměrování
-            } else {
-                alert('Nepodařilo se smazat kvíz: ' + data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Chyba při mazání kvízu:', error);
-        });
+        var kvizId = document.getElementById('kviz_id').value;
+        if(confirm('Opravdu chcete smazat tento kvíz?')) {
+            fetch('../controller/KvizController.php?action=smazatKviz&kviz_id=' + kvizId, {
+                method: 'GET'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Kvíz byl úspěšně smazán.');
+                    window.location.reload(); // Reload stránky nebo přesměrování
+                } else {
+                    alert('Nepodařilo se smazat kvíz: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Chyba při mazání kvízu:', error);
+            });
+        }
     }
-}
 
     </script>
 </head>

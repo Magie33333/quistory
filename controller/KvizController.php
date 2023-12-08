@@ -47,6 +47,7 @@ class KvizController {
         $jeSpravna = $this->kvizModel->overitOdpoved($otazka_id, $moznost_id);
         if ($jeSpravna) {
             $_SESSION['pocetSpravnych']++;
+            $this->kvizModel->pridejMozkaky($_SESSION['uzivatel_id'], 1);
         }
 
         $_SESSION['zobrazenéOtázky'][] = $otazka_id;
@@ -104,15 +105,40 @@ public function ziskatDalsiOtazkuAjax($kviz_id) {
     public function ukoncitKviz() {
         header('Content-Type: application/json');
     
-        $pocetSpravnych = $_SESSION['pocetSpravnych'] ?? 0;
-        $unikatniOtazky = array_unique($_SESSION['zobrazenéOtázky'] ?? []);
-        $pocetUnikatnichOtazek = count($unikatniOtazky);
+    $pocetSpravnych = $_SESSION['pocetSpravnych'] ?? 0;
+    $unikatniOtazky = array_unique($_SESSION['zobrazenéOtázky'] ?? []);
+    $pocetUnikatnichOtazek = count($unikatniOtazky);
+    $kviz_id = $_SESSION['kviz_id'] ?? null;
+    $uzivatel_id = $_SESSION['uzivatel_id'] ?? null; // Předpokládáme, že máte uživatel_id v session
+    
+    // Zkontrolujte, jestli máte kviz_id a uzivatel_id
+    if ($kviz_id === null || $uzivatel_id === null) {
+        echo json_encode(['status' => 'error', 'message' => 'Chybí ID kvízu nebo uživatele.']);
+        exit();
+    }
+    
+     // Vložení výsledků do databáze
+     try {
+        $sql = "INSERT INTO vysledky (uzivatel_id, kviz_id, skore, datum_spocteni) VALUES (:uzivatel_id, :kviz_id, :skore, NOW())";
+        $stmt = $this->kvizModel->prepare($sql);
+        $stmt->execute([
+            ':uzivatel_id' => $uzivatel_id,
+            ':kviz_id' => $kviz_id,
+            ':skore' => $pocetSpravnych
+        ]);
+        $vysledek_id = $this->kvizModel->lastInsertId();  
+    } catch (PDOException $e) {
+        error_log("Chyba při ukládání výsledků kvízu: " . $e->getMessage());
+        echo json_encode(['status' => 'error', 'message' => 'Nelze uložit výsledky kvízu.']);
+        exit();
+    }
     
         echo json_encode([
             'status' => 'completed',
             'pocetSpravnych' => $pocetSpravnych,
             'pocetZobrazenych' => $pocetUnikatnichOtazek,
-            'message' => "Kvíz skončil. Máte $pocetSpravnych správných odpovědí z $pocetUnikatnichOtazek otázek."
+            'message' => "Kvíz skončil. Máte $pocetSpravnych správných odpovědí z $pocetUnikatnichOtazek otázek.",
+            'vysledek_id' => $vysledek_id
         ]);
     
         // Reset session dat pro kvíz
@@ -124,36 +150,24 @@ public function ziskatDalsiOtazkuAjax($kviz_id) {
         $_SESSION['zobrazenéOtázky'] = [];
     }
 
-/*public function ukoncitKvizz($kviz_id) {
-    header('Content-Type: application/json');
-
-    // Zde můžete doplnit logiku pro zpracování výsledků kvízu
-    $pocetSpravnych = $_SESSION['pocetSpravnych'] ?? 0;
-    $pocetOtazek = count($_SESSION['zobrazenéOtázky'] ?? []);
-
-    echo json_encode([
-        'status' => 'expired',
-        'pocetSpravnych' => $pocetSpravnych,
-        'pocetOtazek' => $pocetOtazek,
-        'message' => "Kvíz skončil. Máte $pocetSpravnych správných odpovědí z $pocetOtazek otázek."
-    ]);
-
-     // Reset session dat pro kvíz
-     $_SESSION['zacatekKvizu'] = null;
-     $_SESSION['casovyLimit'] = null;
-     $_SESSION['zbývajícíCas'] = null;
-     $_SESSION['kviz_id'] = null;
-     $_SESSION['pocetSpravnych'] = null;
-     $_SESSION['zobrazenéOtázky'] = [];
-}*/
-
 public function vytvoritKviz() {
     $nazev = $_POST['nazev'];
     $popis = $_POST['popis'];
-    echo $nazev;
-    echo $popis;
+    $cena = $_POST['cena'];
+
     // Volání metody modelu pro vytvoření kvízu
-    $this->kvizModel->vytvoritKviz($nazev, $popis);
+    try {
+        $this->kvizModel->vytvoritKviz($nazev, $popis, $cena);
+
+        // Přesměrování a zobrazení úspěšné zprávy
+        header('Location: ../view/SpravaKvizuView.php');
+        exit();
+    } catch (Exception $e) {
+        // Přesměrování a zobrazení chybové zprávy
+        header('Location: ../view/SpravaKvizuView.php');
+        exit();
+    }
+    
 }
 
 public function pridatOtazku() {
@@ -167,7 +181,18 @@ public function pridatOtazku() {
     ];
 
     // Volání metody modelu pro přidání otázky do kvízu
-    $this->kvizModel->pridatOtazku($kviz_id, $otazka_text, $moznosti);
+    
+    try {
+        $this->kvizModel->pridatOtazku($kviz_id, $otazka_text, $moznosti);
+
+        // Přesměrování a zobrazení úspěšné zprávy
+        header('Location: ../view/SpravaKvizuView.php');
+        exit();
+    } catch (Exception $e) {
+        // Přesměrování a zobrazení chybové zprávy
+        header('Location: ../view/SpravaKvizuView.php');
+        exit();
+    }
 }
 
 public function upravitKviz() {
@@ -176,7 +201,19 @@ public function upravitKviz() {
     $popis = $_POST['popis'];
 
     // Volání metody modelu pro úpravu kvízu
-    $this->kvizModel->upravitKviz($kviz_id, $nazev, $popis);
+    
+    try {
+        $this->kvizModel->upravitKviz($kviz_id, $nazev, $popis);
+
+        // Přesměrování a zobrazení úspěšné zprávy
+        header('Location: ../view/SpravaKvizuView.php');
+        exit();
+    } catch (Exception $e) {
+        // Přesměrování a zobrazení chybové zprávy
+        header('Location: ../view/SpravaKvizuView.php');
+        exit();
+    }
+    
 }
 
 public function ziskatDetailKvizuAjax($kviz_id) {
@@ -247,6 +284,14 @@ public function ziskatDetailOtazkyAjax($otazka_id) {
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Otázka nenalezena']);
     }
+}
+
+public function ziskatStavMozkaku($uzivatel_id) {
+    return $this->kvizModel->ziskatStavMozkaku($uzivatel_id);
+}
+
+public function zobrazOdemceneKvizy($uzivatel_id) {
+    return $this->kvizModel->zobrazOdemceneKvizy($uzivatel_id);
 }
 
 }

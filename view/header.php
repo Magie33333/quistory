@@ -5,6 +5,7 @@ if (!isset($_SESSION['uzivatel_jmeno'])) {
 }
 
 $uzivatel_jmeno = $_SESSION['uzivatel_jmeno']; // Získáme jméno přihlášeného uživatele
+
 ?>
 
 <script>
@@ -26,12 +27,22 @@ $uzivatel_jmeno = $_SESSION['uzivatel_jmeno']; // Získáme jméno přihlášen�
 
 </script>
 
+<head>
+    <script src="https://kit.fontawesome.com/395ab71001.js" crossorigin="anonymous"></script>
+</head>
+
 <div class="header">
-        <div>QUISTORY</div>
-        <div class="user-menu">
-            <?php echo htmlspecialchars($uzivatel_jmeno); ?>
-            <div class="dropdown-menu">
-                <a href="#" onclick="odhlasit()">Odhlásit se</a>
-            </div>
-        </div>
+    <div>
+        QUISTORY
     </div>
+    <div class="user-menu">
+        <i class="fa-solid fa-user"></i>
+        <?php echo htmlspecialchars($uzivatel_jmeno); ?>
+        <span class="mozkaky-stav">
+            <i class="fa-solid fa-coins"></i> Mozkáky: <?php echo htmlspecialchars($mozkaky); ?>
+        </span>
+        <div class="dropdown-menu">
+            <a href="#" onclick="odhlasit()">Odhlásit se</a>
+    </div>
+</div>
+</div>

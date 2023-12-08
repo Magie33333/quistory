@@ -11,14 +11,15 @@ if ($jeAdmin) {
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
-    <title>Správa Kvízů</title>
+    <title>Správa kvízů</title>
+    <link rel="stylesheet" href="../css/sprava.css">
 </head>
 <body>
-    <h1>Správa Kvízů</h1>
+    <h1>Správa kvízů</h1>
 
-    <a href="./VytvoritKviz.php">Vytvořit Nový Kvíz</a><br>
-    <a href="./PridatOtazku.php">Přidat Otázku do Kvízu</a><br>
-    <a href="./UpravitKviz.php">Upravit Kvíz</a><br>
+    <a href="./VytvoritKviz.php">Vytvořit nový kvíz</a><br>
+    <a href="./PridatOtazku.php">Přidat otázku do kvízu</a><br>
+    <a href="./UpravitKviz.php">Upravit kvíz</a><br>
     <a href="./UpravitOtazku.php">Upravit otázku</a><br>
 </body>
 </html>

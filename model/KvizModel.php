@@ -58,11 +58,12 @@ class KvizModel {
         return $odpoved['je_spravna'] == 1;
     }
 
-    public function vytvoritKviz($nazev, $popis) {
-        $sql = "INSERT INTO kvizy (nazev, popis) VALUES (:nazev, :popis)";
+    public function vytvoritKviz($nazev, $popis, $cena) {
+        $sql = "INSERT INTO kvizy (nazev, popis, cena_mozkaky) VALUES (:nazev, :popis, :cena_mozkaky)";
         $stmt = $this->db->prepare($sql);
         $stmt->bindParam(':nazev', $nazev);
         $stmt->bindParam(':popis', $popis);
+        $stmt->bindParam(':cena_mozkaky', $cena);
         $stmt->execute();
     }
 
@@ -110,8 +111,35 @@ class KvizModel {
     }
 
     public function smazatKviz($kviz_id) {
-        $stmt = $this->db->prepare("DELETE FROM kvizy WHERE kviz_id = ?");
-        return $stmt->execute([$kviz_id]);
+        $this->db->beginTransaction();
+        try {
+            // Smažeme všechny možnosti spojené s otázkami tohoto kvízu
+            $stmt = $this->db->prepare("DELETE moznosti FROM moznosti 
+                                         JOIN otazky ON moznosti.otazka_id = otazky.otazka_id 
+                                         WHERE otazky.kviz_id = ?");
+            $stmt->execute([$kviz_id]);
+    
+            // Smažeme všechny otázky spojené s tímto kvízem
+            $stmt = $this->db->prepare("DELETE FROM otazky WHERE kviz_id = ?");
+            $stmt->execute([$kviz_id]);
+    
+            // Smažeme všechny výsledky spojené s tímto kvízem
+            $stmt = $this->db->prepare("DELETE FROM vysledky WHERE kviz_id = ?");
+            $stmt->execute([$kviz_id]);
+    
+            // Nyní můžeme bezpečně smazat samotný kvíz
+            $stmt = $this->db->prepare("DELETE FROM kvizy WHERE kviz_id = ?");
+            $stmt->execute([$kviz_id]);
+    
+            $this->db->commit();
+            return true;
+        } catch (PDOException $e) {
+            // Pokud dojde k jakékoliv chybě, transakce se vrátí zpět
+            $this->db->rollBack();
+            // Logování chyby
+            error_log('Chyba při mazání kvízu: ' . $e->getMessage());
+            return false;
+        }
     }
 
     public function upravitOtazku($otazka_id, $kviz_id, $otazka_text, $moznosti, $spravna_odpoved) {
@@ -140,6 +168,46 @@ class KvizModel {
         $stmt = $this->db->prepare("SELECT otazka_id, otazka_text FROM otazky");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function prepare($sql) {
+        return $this->db->prepare($sql);
+    }
+
+    public function lastInsertId() {
+        return $this->db->lastInsertId();
+    }
+
+    public function pridejMozkaky($uzivatel_id, $ziskane_mozkaky) {
+        $stmt = $this->db->prepare("UPDATE uzivatele SET mozkaky = mozkaky + :ziskane_mozkaky WHERE id = :uzivatel_id");
+        $stmt->execute([':ziskane_mozkaky' => $ziskane_mozkaky, ':uzivatel_id' => $uzivatel_id]);
+    }
+    
+    public function odecistMozkaky($uzivatel_id, $cena_mozkaky) {
+        $stmt = $this->db->prepare("UPDATE uzivatele SET mozkaky = mozkaky - :cena_mozkaky WHERE id = :uzivatel_id AND mozkaky >= :cena_mozkaky");
+        $stmt->execute([':cena_mozkaky' => $cena_mozkaky, ':uzivatel_id' => $uzivatel_id]);
+    }
+
+    public function ziskatCenuKvizu($kviz_id) {
+        $stmt = $this->db->prepare("SELECT cena_mozkaky FROM kvizy WHERE kviz_id = ?");
+        $stmt->execute([$kviz_id]);
+        $vysledek = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $vysledek ? $vysledek['cena_mozkaky'] : 0;
+    }
+
+    public function ziskatStavMozkaku($uzivatel_id) {
+        $stmt = $this->db->prepare("SELECT mozkaky FROM uzivatele WHERE id = :uzivatel_id");
+        $stmt->bindParam(':uzivatel_id', $uzivatel_id, PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result ? $result['mozkaky'] : 0;
+    }
+
+    public function zobrazOdemceneKvizy($uzivatel_id) {
+        $sql = "SELECT kviz_id FROM transakce WHERE uzivatel_id = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$uzivatel_id]);
+        return $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
     }
 }
 ?>

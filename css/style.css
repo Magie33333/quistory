@@ -36,13 +36,6 @@ html, body {
     font-weight: bold; /* Tučnější font */
     color: #fff; /* Bílý text pro název kvízu */
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Stín pro lepší čitelnost */
-    /* ... */
-}
-
-.user-menu:before {
-    content: '\1F464'; /* Příklad: Unicode ikona uživatele */
-    font-size: 1.2em; /* Větší ikona */
-    margin-right: 10px; /* Odstup mezi ikonou a textem */
 }
 
 .user-menu {
@@ -54,6 +47,7 @@ html, body {
     color: #333;
     padding-right: 1em;
     max-width: 30%;
+    padding-right: 10px;
 }
 
 .user-menu::after {
@@ -80,11 +74,11 @@ html, body {
     display: inline-block; /* Změníme na inline-block pro lepší kontrolu velikosti */
     background-color: #ffffff; /* Plná bílá barva pro lepší viditelnost */
     color: #333; /* Tmavší text */
-    padding: 5px 10px; /* Menší padding pro menší velikost tlačítka */
+    padding: 10px 20px; /* Zvětšení paddingu pro větší tlačítka */
+    font-size: 1em; /* Zvětšení fontu pro větší text */
     border-radius: 4px; /* Zaoblené rohy */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Drobný stín pro lepší výraz */
     text-decoration: none; /* Žádné podtržení textu */
-    font-size: 0.5em; /* Menší velikost písma */
     transition: background-color 0.3s, transform 0.3s; /* Přidání přechodu pro animaci */
 }
 
@@ -189,6 +183,80 @@ ul li a p {
     font-size: 1.2em; /* Větší ikona */
 }
 
+.high-score-icon-container {
+    display: flex; /* použijeme flexbox pro snadné centrování */
+    align-items: center; /* vertikální centrování */
+    justify-content: flex-end; /* nebo flex, záleží na vašem layoutu */
+    position: relative; /* pro absolutní pozicování ikony v rámci containeru */
+    width: 50px; /* nastavte vhodnou šířku */
+    height: 50px; /* nastavte vhodnou výšku */
+}
+
+.high-score-icon-container a {
+    display: block;
+    position: absolute;
+    top: 50%;
+    right: 0;
+     /* zarovnání ikony vertikálně */
+    text-decoration: none; /* odstranění podtržení odkazu */
+    color: inherit; /* dědění barvy textu */
+}
+
+.high-score-icon-container i {
+    display: block;
+    font-size: 2em; /* velikost ikony */
+}
+
+.high-score-icon-container img {
+    height: 50px; /* Nastavte vhodnou velikost ikony */
+    width: auto;
+    cursor: pointer;
+}
+
+.high-score-icon-container:hover::after {
+    content: "High Score";
+    position: absolute;
+    top: 100%; /* Posuneme nápis pod ikonu */
+    left: 50%;
+    transform: translateX(-50%); /* Centrování nápisu */
+    white-space: nowrap;
+    padding: 5px 10px;
+    background-color: #000;
+    color: #fff;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+table {
+    width: 100%; /* Šířka tabulky přes celou stránku */
+    max-width: 1000px; /* Maximální šířka tabulky */
+    margin: 20px auto; /* Centrování tabulky na střed */
+    border-collapse: collapse; /* Odstranění mezery mezi buňkami */
+    background-color: #ffffff; /* Bílé pozadí tabulky */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Lehký stín */
+}
+
+table th,
+table td {
+    text-align: left; /* Zarovnání textu vlevo */
+    padding: 15px; /* Odsazení obsahu buněk */
+    border-bottom: 1px solid #ddd; /* Spodní okraj buněk */
+}
+
+table th {
+    background-color: #f5f7fa; /* Barva pozadí hlavičky tabulky */
+    color: #333; /* Barva textu hlavičky */
+    font-weight: bold; /* Tučné písmo */
+}
+
+table tr:hover {
+    background-color: #f5f7fa; /* Barva pozadí řádku při najetí myši */
+}
+
+.mozkaky-stav {
+    margin-left: 10px; /* Přidání mezery vlevo od stavu Mozkáků */
+}
+
 
 /* Responzivní design */
 @media (max-width: 600px) {
@@ -204,5 +272,15 @@ ul li a p {
         max-width: 100%; /* Na malých zařízeních může jméno uživatele zabírat plnou šířku */
         padding-right: 0; /* Odebrání paddingu na malých zařízeních */
         text-align: left; /* Zarovnání textu doleva na malých zařízeních */
+    }
+
+    table {
+        width: 95%; /* Menší šířka tabulky na malých zařízeních */
+        margin: 10px auto; /* Menší okraje */
+    }
+
+    table th,
+    table td {
+        padding: 10px; /* Menší odsazení na malých zařízeních */
     }
 }

@@ -1,7 +1,9 @@
 <?php
-include '../model/UzivatelModel.php';
-include '../conf/connect.php';
 session_start();
+include '../conf/connect.php';
+include '../model/UzivatelModel.php';
+
+
 
 class UzivatelController {
     private $uzivatelModel;
