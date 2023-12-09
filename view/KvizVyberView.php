@@ -2,6 +2,10 @@
 include "./header.php";
 // Zde předpokládáme, že 'username' je uloženo v session při přihlášení uživatele
 $jeAdmin = isset($_SESSION['uzivatel_jmeno']) && $_SESSION['uzivatel_jmeno'] == 'admin';
+
+$kvizyInfo = $controller->zobrazKvizyProUzivatele($_SESSION['uzivatel_id'] ?? null);
+$odemceneKvizy = $kvizyInfo['odemcene'];
+$zamceneKvizy = $kvizyInfo['zamcene'];
 ?>
 
 <!DOCTYPE html>
@@ -26,8 +30,21 @@ $jeAdmin = isset($_SESSION['uzivatel_jmeno']) && $_SESSION['uzivatel_jmeno'] == 
         </div>
     <?php endif; ?>
 
+    <?php
+        if (isset($_SESSION['nákup_stav'])) {
+            if ($_SESSION['nákup_stav'] == 'úspěšný') {
+                echo '<div class="alert alert-success">Nákup kvízu byl úspěšný!</div>';
+            } else if ($_SESSION['nákup_stav'] == 'neúspěšný') {
+                echo '<div class="alert alert-danger">Nákup kvízu se nezdařil.</div>';
+            }
+            // Odstranit session proměnnou po zobrazení zprávy
+            unset($_SESSION['nákup_stav']);
+        }
+?>
+
+    <h2>Dostupné kvízy</h2>
     <ul>
-    <?php foreach ($kvizy as $kviz): ?>
+    <?php foreach ($odemceneKvizy as $kviz): ?>
         <li>
             <a href="./KvizProbihaView.php?kviz_id=<?php echo htmlspecialchars($kviz['kviz_id']); ?>">
                 <?php echo htmlspecialchars($kviz['nazev']); ?>
@@ -41,6 +58,24 @@ $jeAdmin = isset($_SESSION['uzivatel_jmeno']) && $_SESSION['uzivatel_jmeno'] == 
             </div>
         </li>
     <?php endforeach; ?>
+    </ul>
+
+    <h2>Uzamčené kvízy</h2>
+    <ul>
+        <?php foreach ($zamceneKvizy as $kviz): ?>
+        <li class="zamceny">
+            <?php echo htmlspecialchars($kviz['nazev']); ?>
+            <i class="fa-solid fa-lock fa-xl"></i>
+            <p><?php echo htmlspecialchars($kviz['popis']); ?></p>
+            <p>Cena: <?php echo htmlspecialchars($kviz['cena_mozkaky']); ?> <i class="fa-solid fa-coins"></i> Mozkáků</p>
+
+            <form action="../controller/KvizController.php" method="post">
+                <input type="hidden" name="action" value="koupitKviz">
+                <input type="hidden" name="kviz_id" value="<?php echo $kviz['kviz_id']; ?>">
+                <button type="submit" class="koupit-kviz-btn">Koupit</button>
+            </form>
+        </li>
+        <?php endforeach; ?>
     </ul>
 
     <script src="../conf/logout.js"></script>

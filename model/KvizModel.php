@@ -111,36 +111,40 @@ class KvizModel {
     }
 
     public function smazatKviz($kviz_id) {
-        $this->db->beginTransaction();
-        try {
-            // Smažeme všechny možnosti spojené s otázkami tohoto kvízu
-            $stmt = $this->db->prepare("DELETE moznosti FROM moznosti 
-                                         JOIN otazky ON moznosti.otazka_id = otazky.otazka_id 
-                                         WHERE otazky.kviz_id = ?");
-            $stmt->execute([$kviz_id]);
-    
-            // Smažeme všechny otázky spojené s tímto kvízem
-            $stmt = $this->db->prepare("DELETE FROM otazky WHERE kviz_id = ?");
-            $stmt->execute([$kviz_id]);
-    
-            // Smažeme všechny výsledky spojené s tímto kvízem
-            $stmt = $this->db->prepare("DELETE FROM vysledky WHERE kviz_id = ?");
-            $stmt->execute([$kviz_id]);
-    
-            // Nyní můžeme bezpečně smazat samotný kvíz
-            $stmt = $this->db->prepare("DELETE FROM kvizy WHERE kviz_id = ?");
-            $stmt->execute([$kviz_id]);
-    
-            $this->db->commit();
-            return true;
-        } catch (PDOException $e) {
-            // Pokud dojde k jakékoliv chybě, transakce se vrátí zpět
-            $this->db->rollBack();
-            // Logování chyby
-            error_log('Chyba při mazání kvízu: ' . $e->getMessage());
-            return false;
-        }
+    $this->db->beginTransaction();
+    try {
+        // Smažeme všechny záznamy v transakcích spojené s tímto kvízem
+        $stmt = $this->db->prepare("DELETE FROM transakce WHERE kviz_id = ?");
+        $stmt->execute([$kviz_id]);
+
+        // Smažeme všechny možnosti spojené s otázkami tohoto kvízu
+        $stmt = $this->db->prepare("DELETE moznosti FROM moznosti 
+                                     JOIN otazky ON moznosti.otazka_id = otazky.otazka_id 
+                                     WHERE otazky.kviz_id = ?");
+        $stmt->execute([$kviz_id]);
+
+        // Smažeme všechny otázky spojené s tímto kvízem
+        $stmt = $this->db->prepare("DELETE FROM otazky WHERE kviz_id = ?");
+        $stmt->execute([$kviz_id]);
+
+        // Smažeme všechny výsledky kvízů spojené s tímto kvízem
+        $stmt = $this->db->prepare("DELETE FROM vysledky WHERE kviz_id = ?");
+        $stmt->execute([$kviz_id]);
+
+        // Nyní můžeme bezpečně smazat samotný kvíz
+        $stmt = $this->db->prepare("DELETE FROM kvizy WHERE kviz_id = ?");
+        $stmt->execute([$kviz_id]);
+
+        $this->db->commit();
+        return true;
+    } catch (PDOException $e) {
+        // Pokud dojde k jakékoliv chybě, transakce se vrátí zpět
+        $this->db->rollBack();
+        // Logování chyby
+        error_log('Chyba při mazání kvízu: ' . $e->getMessage());
+        return false;
     }
+}
 
     public function upravitOtazku($otazka_id, $kviz_id, $otazka_text, $moznosti, $spravna_odpoved) {
         // Aktualizovat otázku
@@ -208,6 +212,12 @@ class KvizModel {
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$uzivatel_id]);
         return $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+    }
+
+    public function oznacitKvizJakoKoupeny($uzivatel_id, $kviz_id) {
+        $sql = "INSERT INTO transakce (uzivatel_id, kviz_id) VALUES (?, ?)";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$uzivatel_id, $kviz_id]);
     }
 }
 ?>

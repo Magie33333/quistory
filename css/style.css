@@ -257,6 +257,61 @@ table tr:hover {
     margin-left: 10px; /* Přidání mezery vlevo od stavu Mozkáků */
 }
 
+/* Styl pro zamčené kvízy */
+ul li.zamceny {
+    background-color: #f0f0f081; /* Světlejší pozadí pro zatmavený efekt */
+    color: #333333af; /* Šedý text pro "zamčený" vzhled */
+    /*pointer-events: none; /* Uživatel nebude moci kliknout na zamčený kvíz */
+    opacity: 1; /* Polo průhlednost pro zatmavený efekt */
+}
+
+ul li.zamceny .high-score-icon-container{
+    display: none; /* Skryje ikony u zamčeného kvízu */
+}
+
+
+
+/* Přidáme styl pro tlačítko nebo odkaz pro koupi kvízu, pokud je potřeba */
+.koupit-kviz-btn {
+    padding: 5px 10px;
+    background-color: #76b852;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    display: inline-block;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.koupit-kviz-btn:hover {
+    background-color: #669944;
+}
+
+h2 {
+    text-align: center; /* Zarovnání textu na střed */
+    font-size: 1.5em; /* Menší velikost písma */
+    color: #333; /* Barva textu */
+    margin-top: 40px; /* Horní odsazení pro oddělení od ostatního obsahu */
+    margin-bottom: 20px; /* Dolní odsazení pro oddělení od seznamu kvízů */
+}
+
+.alert {
+    text-align: center;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+.alert-success {
+    background-color: #dff0d8;
+    color: #3c763d;
+}
+
+.alert-danger {
+    background-color: #f2dede;
+    color: #a94442;
+}
+
 
 /* Responzivní design */
 @media (max-width: 600px) {

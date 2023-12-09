@@ -294,6 +294,41 @@ public function zobrazOdemceneKvizy($uzivatel_id) {
     return $this->kvizModel->zobrazOdemceneKvizy($uzivatel_id);
 }
 
+public function zobrazKvizyProUzivatele($uzivatel_id) {
+    $odemceneKvizy = $this->kvizModel->zobrazOdemceneKvizy($uzivatel_id);
+    $vsechnyKvizy = $this->zobrazKvizy();
+
+    $odemcene = [];
+    $zamcene = [];
+
+    foreach ($vsechnyKvizy as $kviz) {
+        if (in_array($kviz['kviz_id'], $odemceneKvizy)) {
+            $odemcene[] = $kviz;
+        } else {
+            $zamcene[] = $kviz;
+        }
+    }
+
+    return ['odemcene' => $odemcene, 'zamcene' => $zamcene];
+}
+
+public function koupitKviz($uzivatel_id, $kviz_id) {
+    // Získejte cenu kvízu
+    $cena = $this->kvizModel->ziskatCenuKvizu($kviz_id);
+
+    // Zkontrolujte, jestli má uživatel dostatek Mozkáků
+    $stavMozkaku = $this->kvizModel->ziskatStavMozkaku($uzivatel_id);
+    if ($stavMozkaku >= $cena) {
+        // Odečtení Mozkáků a zapsání transakce
+        $this->kvizModel->odecistMozkaky($uzivatel_id, $cena);
+        $this->kvizModel->oznacitKvizJakoKoupeny($uzivatel_id, $kviz_id);
+        return true;
+    } else {
+        return false; // Nedostatek Mozkáků
+    }
+}
+
+
 }
 
 $controller = new KvizController($conn);
@@ -340,13 +375,11 @@ if (isset($_GET['action'])) {
                     $controller->ziskatDetailOtazkyAjax($_GET['otazka_id']);
                 }
                 break;
-
         case 'ukoncitKviz':
             if (isset($_GET['kviz_id'])) {
-                    $controller->ukoncitKviz($_GET['kviz_id']);
+                $controller->ukoncitKviz($_GET['kviz_id']);
             }
             break;
-
     }
 }
 
@@ -363,6 +396,20 @@ if (isset($_POST['action'])) {
             break;
         case 'upravitOtazku':
             $controller->upravitOtazku();
+            break;
+        case 'koupitKviz':
+            if (isset($_POST['kviz_id']) && isset($_SESSION['uzivatel_id'])) {
+                $uspech = $controller->koupitKviz($_SESSION['uzivatel_id'], $_POST['kviz_id']);
+                if ($uspech) {
+                    // Nákup byl úspěšný
+                    $_SESSION['nákup_stav'] = 'úspěšný';
+                } else {
+                    // Chyba při nákupu
+                    $_SESSION['nákup_stav'] = 'neúspěšný';
+                }
+                header('Location: ../view/KvizVyber.php');
+                exit();
+            }
             break;
     }
 }

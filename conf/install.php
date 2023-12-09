@@ -60,14 +60,14 @@ createTable($conn, "CREATE TABLE IF NOT EXISTS vysledky (
                 FOREIGN KEY (kviz_id) REFERENCES kvizy(kviz_id)
             )", 'vysledky');
 
-createTable($conn, "CREATE TABLE transakce (
+createTable($conn, "CREATE TABLE IF NOT EXISTS transakce (
     uzivatel_id INT NOT NULL,
     kviz_id INT NOT NULL,
     datum_koupe TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (uzivatel_id, kviz_id),
     FOREIGN KEY (uzivatel_id) REFERENCES uzivatele(id),
     FOREIGN KEY (kviz_id) REFERENCES kvizy(kviz_id)
-);", 'vysledky');
+);", 'transakce');
 
 
 
