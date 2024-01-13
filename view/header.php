@@ -5,6 +5,7 @@ if (!isset($_SESSION['uzivatel_jmeno'])) {
 }
 
 $uzivatel_jmeno = $_SESSION['uzivatel_jmeno']; // Získáme jméno přihlášeného uživatele
+$mozkaky = $_SESSION['mozkaky'];
 
 ?>
 
