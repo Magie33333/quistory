@@ -16,6 +16,7 @@ $kvizy = $controller->zobrazKvizy();
     <meta charset="UTF-8">
     <title>Úprava kvízu</title>
     <link rel="stylesheet" href="../css/sprava.css">
+
     <script>
     function nacistDetailKvizu(kvizId) {
         fetch('../controller/KvizController.php?action=ziskatDetailKvizu&kviz_id=' + kvizId)
@@ -32,29 +33,9 @@ $kvizy = $controller->zobrazKvizy();
                 console.error('Chyba při načítání dat kvízu:', error);
             });
     }
-    
-    function smazatKviz() {
-        var kvizId = document.getElementById('kviz_id').value;
-        if(confirm('Opravdu chcete smazat tento kvíz?')) {
-            fetch('../controller/KvizController.php?action=smazatKviz&kviz_id=' + kvizId, {
-                method: 'GET'
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    alert('Kvíz byl úspěšně smazán.');
-                    window.location.reload(); // Reload stránky nebo přesměrování
-                } else {
-                    alert('Nepodařilo se smazat kvíz: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Chyba při mazání kvízu:', error);
-            });
-        }
-    }
 
     </script>
+
 </head>
 <body>
     <h1>Upravit kvíz</h1>
@@ -73,14 +54,20 @@ $kvizy = $controller->zobrazKvizy();
             </select>
         </div>
 
-        <label for="nazev">Nový Název Kvízu:</label>
+        <label for="nazev">Nový název kvízu:</label>
         <input type="text" id="nazev" name="nazev" required>
 
-        <label for="popis">Nový Popis Kvízu:</label>
+        <label for="popis">Nový popis kvízu:</label>
         <textarea id="popis" name="popis" required></textarea>
 
         <button type="submit">Upravit kvíz</button>
-        <button type="button" onclick="smazatKviz()">Smazat vybraný kvíz</button>
+        <button type="button" id="smazatKvizBtn">Smazat vybraný kvíz</button>
     </form>
+    
+<script src="../scripts/upravitKviz.js"></script>
+
 </body>
+
+
+
 </html>

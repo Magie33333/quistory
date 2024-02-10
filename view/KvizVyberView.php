@@ -78,6 +78,6 @@ $zamceneKvizy = $kvizyInfo['zamcene'];
         <?php endforeach; ?>
     </ul>
 
-    <script src="../conf/logout.js"></script>
+    <script src="../scripts/logout.js"></script>
 </body>
 </html>

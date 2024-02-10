@@ -10,10 +10,8 @@ if (!$kviz_id) {
     die("ID kvízu není zadáno.");
 }
 
-// Zde byste načetli výsledky z databáze pro daný kvíz
-$vysledky = []; // Toto by byl výsledek dotazu do databáze
+$vysledky = [];
 
-// Zde bude váš dotaz do databáze pro získání výsledků, které budete chtít zobrazit
 $sql = "SELECT u.username, v.skore, v.datum_spocteni FROM vysledky v
         JOIN uzivatele u ON v.uzivatel_id = u.id
         WHERE v.kviz_id = :kviz_id

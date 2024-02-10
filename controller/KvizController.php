@@ -410,7 +410,7 @@ if (isset($_POST['action'])) {
                 header('Location: ../view/KvizVyber.php');
                 exit();
             }
-            break;
+            break;            
     }
 }
 ?>

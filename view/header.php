@@ -9,24 +9,7 @@ $mozkaky = $_SESSION['mozkaky'];
 
 ?>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var userMenu = document.querySelector('.user-menu');
-        var dropdownMenu = document.querySelector('.dropdown-menu');
-
-        userMenu.addEventListener('click', function(event) {
-            event.stopPropagation();
-            dropdownMenu.classList.toggle('show');
-        });
-
-        window.addEventListener('click', function(event) {
-            if (!userMenu.contains(event.target)) {
-                dropdownMenu.classList.remove('show');
-            }
-        });
-    });
-
-</script>
+<script src="../scripts/header.js"></script>
 
 <head>
     <script src="https://kit.fontawesome.com/395ab71001.js" crossorigin="anonymous"></script>

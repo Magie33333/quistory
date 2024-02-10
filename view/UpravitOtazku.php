@@ -17,45 +17,6 @@ $otazky = $controller->zobrazVsechnyOtazky(); // Předpokládáme, že tato meto
     <meta charset="UTF-8">
     <title>Úprava Otázky</title>
     <link rel="stylesheet" href="../css/sprava.css">
-    <script>
-    function nacistDataOtazky(otazkaId) {
-    fetch('../controller/KvizController.php?action=ziskatDetailOtazky&otazka_id=' + otazkaId)
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                // Aktualizace textu otázky
-                document.getElementById('otazka_text').value = data.otazka.otazka_text;
-                // Aktualizace vybraného kvízu
-                document.getElementById('kviz_id').value = data.otazka.kviz_id;
-                // Nastavení hodnoty hidden_otazka_id
-                document.getElementById('hidden_otazka_id').value = otazkaId;
-
-                // Zobrazit možnosti
-                var moznostiHtml = '';
-                data.moznosti.forEach(function(moznost, index) {
-                    moznostiHtml += '<input type="radio" name="spravna_odpoved" value="' + moznost.moznost_id + '"' + 
-                                    (moznost.je_spravna ? ' checked' : '') + '>' +
-                                    '<input type="text" name="moznosti[' + index + '][text]" value="' + moznost.moznost_text + '">' +
-                                    '<input type="hidden" name="moznosti[' + index + '][id]" value="' + moznost.moznost_id + '"><br>';
-                });
-                document.getElementById('moznosti').innerHTML = moznostiHtml;
-            } else {
-                alert('Data otázky se nepodařilo načíst.');
-            }
-        })
-        .catch(error => {
-            console.error('Chyba při načítání dat otázky:', error);
-        });
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        var selectOtazka = document.getElementById('otazka_id');
-        if (selectOtazka.length > 0) {
-            nacistDataOtazky(selectOtazka.value);
-        }
-    });
-
-    </script>
 </head>
 <body>
     <h1>Upravit Otázku</h1>
@@ -97,4 +58,6 @@ $otazky = $controller->zobrazVsechnyOtazky(); // Předpokládáme, že tato meto
     <button type="submit">Upravit otázku</button>
 </form>
 </body>
+
+<script src="../scripts/upravitOtazku.js"></script>
 </html>
